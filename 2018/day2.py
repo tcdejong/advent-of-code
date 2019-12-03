@@ -1,7 +1,6 @@
 import copy
 import os
 import sys
-from functools import reduce
 
 inputPath = os.path.join(sys.path[0], "day2.txt")
 outputPath = os.path.join(sys.path[0], "day2-output.txt")
