@@ -1,5 +1,6 @@
 # This is a pretty poor execution. It's sloppy.
 # Next time I'd probably write a class for Nodes and Edges.
+# Some refactoring wouldn't be bad either
 
 import math
 import os
@@ -109,7 +110,8 @@ def intersectionDistance(edgeA, edgeB, part2=False):
         return math.inf
 
 
-# print(partOne())
+print(partOne())
+
 
 def partTwo(ex=0):
     stepsA, stepsB = parseInput(ex)
