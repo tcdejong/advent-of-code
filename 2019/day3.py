@@ -1,3 +1,6 @@
+# This is a pretty poor execution. It's sloppy.
+# Next time I'd probably write a class for Nodes and Edges.
+
 import math
 import os
 import sys
