@@ -49,3 +49,5 @@ def day4(lbound, rbound, part):
 
 print(day4(168630, 718098, 1))
 print(day4(168630, 718098, 2))
+
+# print(list(str(123456)))
