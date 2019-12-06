@@ -41,7 +41,7 @@ def partTwo(polymer):
         if newLen < shortestLen:
             shortestLen = newLen
 
-    print("Shortest polymer length: " + str(newLen))
+    print("Shortest polymer length: " + str(shortestLen))
 
 
 # partOne(challengeInput)
