@@ -35,26 +35,26 @@ for dt, event in events:
 
 
 def strategy1():
-
     chosenID = max(minutesAsleep,
                    key=lambda id: sum(minutesAsleep[id].values())
                    )
     chosenMinute = max(minutesAsleep[chosenID],
                        key=lambda m: minutesAsleep[chosenID][m]
                        )
-    print(chosenID * chosenMinute)
+    print("Part 1:", chosenID * chosenMinute)
 
 
 def strategy2():
-    maxAsleep = 0
+    globalMax = 0
     chosenMinute = -1
     for id in minutesAsleep:
-        maxMinute = max(minutesAsleep[id], key=lambda m: minutesAsleep[id][m])
-        print("For id " + str(id) + ": " + str(maxMinute))
-        if maxMinute > maxAsleep:
-            chosenID, chosenMinute = id, maxMinute
+        sleepCounts = minutesAsleep[id]
+        localMinute = max(sleepCounts, key=lambda m: sleepCounts[m])
+        localMax = minutesAsleep[id][localMinute]
+        if localMax > globalMax:
+            chosenID, chosenMinute, globalMax = id, localMinute, localMax
 
-    print(chosenID * chosenMinute)
+    print("Part 2:", chosenID * chosenMinute)
 
 
 strategy1()
