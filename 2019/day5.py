@@ -75,7 +75,7 @@ def runIntCode(intCode):
             inp = int(input("Input required:"))
             intCode[par[0]] = inp
         elif opcode == OUTP:
-            print("Diagnostic output:" + str(intCode[par[0]]))
+            print("Program output:" + str(intCode[par[0]]))
         elif opcode == JIFT:
             if intCode[par[0]] != 0: 
                 pointer = intCode[par[1]]
@@ -97,7 +97,7 @@ def runIntCode(intCode):
 
         pointer += nParams.get(opcode) + 1
 
-    return intCode
+    print("Program execution completed.")
 
 
 def parseInstruction(intCode):
@@ -146,8 +146,13 @@ def listPrograms(error=False):
 
 def run():
     listPrograms()
-    programName = input("Program name:")
-    program = programs.get(programName)
+    while True:
+        programName = input("Program name:")
+        if programName in programs:
+            program = programs.get(programName)
+            break
+        else:
+            listPrograms(True)
     runIntCode(program)
 
 run()
