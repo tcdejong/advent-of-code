@@ -1,37 +1,4 @@
-##### Documentation
-# Program: sequence of intcode instructions and parameters
-# Instruction: opcode and modes for parameters
-#   Rightmost two digits of the instruction are the opcode
-#   Other digits are modes for parameters, right to left
-#   Leading zeros are trimmed, but count as positional indicators
-# Modes:
-#   0: position, use the value stored at the position stored at this position
-#   1: immediate, use the value stored at this position
-# Operation: one instruction plus its parameters
-
-# The rightmost two digits are for the opcode
-# the other digits, right to left, are the modes for params
-# leading zeros are trimmed, but still count conceptually.
-
-# Opcodes:
-# 1:  ADD:   add two params 1 and 2 and store in position 3
-# 2:  MULT:  multiply two params 1 and 2 and store in position 3
-# 3:  INP:   take single external input and save it to pos of param 1
-# 4:  OUTP:  outputs whatever is in the position of param 1
-# 5:  JIFT:  If param 1 is non-zero, set the pointer to the value from param 2
-# 6:  JIFF:  If param 1 is zero, set the pointer to the value from param 2
-# 7:  LT:    If param 1 is less than param 2, store 1 in the position given by param 3. Else store 0.
-# 8:  EQ:    If param 1 is equal to param 2, store 1 in the position given by param 3. Else store 0.
-# 99: HALT:  Halt program
-
-# Example instruction:
-# ABCDE (labels)
-#  1002 (digits)
-# DE = opcode = 02 = 2 = MULT, 
-# C = 1st param mode, 
-# B = 2nd param mode, 
-# A 3rd param (leading 0)
-
+from copy import deepcopy
 import itertools
 
 ADD = 1
@@ -56,14 +23,23 @@ nParams = {
     HALT: 0,
 }
 
-instruction = -999
+def cleanInputs(inputs):
+    if type(inputs) == int:
+        return inputs
+    elif type(inputs) == list:
+        output = []
+        for val in inputs:
+            if type(val) == int:
+                output.append(val)
+            else:
+                output = output + cleanInputs(val)
+        return output
 
 
 def runIntCode(intCode, inputs, retProgram=False, pointer=0):
-    global instruction
     out = -999
+    # inputs = cleanInputs(inputs)
     while True:       
-        instruction = intCode[pointer]
         opcode, par = parseInstruction(intCode, pointer)
 
         if opcode == ADD:
@@ -71,10 +47,13 @@ def runIntCode(intCode, inputs, retProgram=False, pointer=0):
         elif opcode == MULT:
             intCode[par[2]] = intCode[par[0]] * intCode[par[1]]
         elif opcode == INP:
-            inp = inputs.pop(0)
-            intCode[par[0]] = inp
+            if len(inputs) == 0:
+                break
+            intCode[par[0]] = inputs.pop(0)
         elif opcode == OUTP:
             out = intCode[par[0]]
+            pointer += nParams.get(opcode) + 1
+            break
             # print("Program output:" + str(intCode[par[0]]))
         elif opcode == JIFT:
             if intCode[par[0]] != 0: 
@@ -98,12 +77,13 @@ def runIntCode(intCode, inputs, retProgram=False, pointer=0):
         pointer += nParams.get(opcode) + 1
 
     if retProgram:
-        return out, intCode
+        return out, intCode, pointer
     else:
         return out
 
 
 def parseInstruction(intCode, pointer):
+    instruction = intCode[pointer]
     digits = list(map(int, list(str(instruction)))) # Ew
     modes = []
 
@@ -158,6 +138,7 @@ def partOne():
 
     print(maxThrusters)
 
+
 def runPhaseCodeSequence(seq):
     res = 0
     for val in seq:
@@ -166,4 +147,42 @@ def runPhaseCodeSequence(seq):
         res = runIntCode(program, inputs)
     return res
 
+# Nonfunctional: no crash, but invalid results
+def runFeedbackCodeSequence(seq, programName="ex4"):
+    program = programs.get(programName)
+
+    vms = {
+        "a": [deepcopy(program), 0], 
+        "b": [deepcopy(program), 0], 
+        "c": [deepcopy(program), 0], 
+        "d": [deepcopy(program), 0], 
+        "e": [deepcopy(program), 0], 
+    }
+
+    # initialize vms    
+    signal = 0
+    for fbc, vm in zip(seq, vms):
+        program, pointer = vms[vm]
+        signal, program, pointer = runIntCode(program, [fbc, signal], True, pointer)
+        vms[vm] = [program, pointer]
+
+    # feedback boosting
+    while True:
+        for vm in vms:
+            program, pointer = vms[vm]
+            signal, program, pointer = runIntCode(program, [signal], True, pointer)
+            vms[vm] = [program, pointer]
+        
+        if program[pointer] == 99:
+            break
+
+    print(signal)
+    return signal
+
+
+def partTwo():
+    # for all permtutations of feedbackcodes, find highest runFeedbackCodeSequence output
+    pass
+
 partOne()
+runFeedbackCodeSequence([9, 8, 7, 6, 5])
