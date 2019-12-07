@@ -59,8 +59,7 @@ nParams = {
 instruction = -999
 
 
-def runIntCode(intCode, inputs, retProgram=False):
-    pointer = 0
+def runIntCode(intCode, inputs, retProgram=False, pointer=0):
     global instruction
     out = -999
     while True:       
@@ -148,7 +147,7 @@ def listPrograms(error=False):
     print("-" * 20)
 
 
-def run():
+def partOne():
     phaseCodes = itertools.permutations(range(0, 5))
     maxThrusters = 0
 
@@ -167,4 +166,4 @@ def runPhaseCodeSequence(seq):
         res = runIntCode(program, inputs)
     return res
 
-run()
+partOne()
