@@ -1,6 +1,7 @@
 from copy import deepcopy
 import itertools
 
+
 ADD = 1
 MULT = 2
 INP = 3
@@ -23,88 +24,89 @@ nParams = {
     HALT: 0,
 }
 
-def cleanInputs(inputs):
-    if type(inputs) == int:
-        return inputs
-    elif type(inputs) == list:
-        output = []
-        for val in inputs:
-            if type(val) == int:
-                output.append(val)
-            else:
-                output = output + cleanInputs(val)
-        return output
+class intCodeComputer:
+    def __init__(self, program, pointer=0):
+        self.program = deepcopy(program)
+        self.pointer = deepcopy(pointer)
+        self.inp = []
+        self.outp = []
 
 
-def runIntCode(intCode, inputs, retProgram=False, pointer=0):
-    out = -999
-    # inputs = cleanInputs(inputs)
-    while True:       
-        opcode, par = parseInstruction(intCode, pointer)
+    def test(self):
+        return self.pointer
 
-        if opcode == ADD:
-            intCode[par[2]] = intCode[par[0]] + intCode[par[1]]
-        elif opcode == MULT:
-            intCode[par[2]] = intCode[par[0]] * intCode[par[1]]
-        elif opcode == INP:
-            if len(inputs) == 0:
+    def runIntCode(self, inputs):
+        intCode = self.program
+        pointer = self.pointer
+        out = -999
+        # inputs = cleanInputs(inputs)
+        while True:       
+            opcode, par = self.parseInstruction()
+
+            if opcode == ADD:
+                intCode[par[2]] = intCode[par[0]] + intCode[par[1]]
+            elif opcode == MULT:
+                intCode[par[2]] = intCode[par[0]] * intCode[par[1]]
+            elif opcode == INP:
+                if len(inputs) == 0:
+                    break
+                intCode[par[0]] = inputs.pop(0)
+            elif opcode == OUTP:
+                out = intCode[par[0]]
+                self.pointer += nParams.get(opcode) + 1
                 break
-            intCode[par[0]] = inputs.pop(0)
-        elif opcode == OUTP:
-            out = intCode[par[0]]
-            pointer += nParams.get(opcode) + 1
-            break
-            # print("Program output:" + str(intCode[par[0]]))
-        elif opcode == JIFT:
-            if intCode[par[0]] != 0: 
-                pointer = intCode[par[1]]
-                continue
-        elif opcode == JIFF:
-            if intCode[par[0]] == 0:
-                pointer = intCode[par[1]]
-                continue
-        elif opcode == LT:
-            intCode[par[2]] = 1 if intCode[par[0]] < intCode[par[1]] else 0
-        elif opcode == EQ:
-            intCode[par[2]] = 1 if intCode[par[0]] == intCode[par[1]] else 0
-        elif opcode == HALT:
-            break
-        else:
-            print("Invalid instruction - Something went wrong!")
-            print(intCode[pointer], opcode)
-            break
+                # print("Program output:" + str(intCode[par[0]]))
+            elif opcode == JIFT:
+                if intCode[par[0]] != 0: 
+                    self.pointer = intCode[par[1]]
+                    continue
+            elif opcode == JIFF:
+                if intCode[par[0]] == 0:
+                    self.pointer = intCode[par[1]]
+                    continue
+            elif opcode == LT:
+                intCode[par[2]] = 1 if intCode[par[0]] < intCode[par[1]] else 0
+            elif opcode == EQ:
+                intCode[par[2]] = 1 if intCode[par[0]] == intCode[par[1]] else 0
+            elif opcode == HALT:
+                break
+            else:
+                print("Invalid instruction - Something went wrong!")
+                print(intCode[pointer], opcode)
+                break
 
-        pointer += nParams.get(opcode) + 1
+            self.pointer += nParams.get(opcode) + 1
 
-    if retProgram:
-        return out, intCode, pointer
-    else:
         return out
 
+        
 
-def parseInstruction(intCode, pointer):
-    instruction = intCode[pointer]
-    digits = list(map(int, list(str(instruction)))) # Ew
-    modes = []
 
-    if len(digits) <= 2:
-        opcode = instruction
-    elif digits[-2] == 0: 
-        opcode = digits[-1]
-        modes = digits[0:-2]
-    elif digits[-2] == 9 and digits[-1] == 9:
-        opcode = 99
+    def parseInstruction(self):
+        intCode = self.program
+        pointer = self.pointer
+        instruction = intCode[pointer]
+        digits = list(map(int, list(str(instruction)))) # Ew
+        modes = []
 
-    leadingZeros = nParams.get(opcode) - len(modes)
-    modes = leadingZeros * [0] + modes
-    modes.reverse()
+        if len(digits) <= 2:
+            opcode = instruction
+        elif digits[-2] == 0: 
+            opcode = digits[-1]
+            modes = digits[0:-2]
+        elif digits[-2] == 9 and digits[-1] == 9:
+            opcode = 99
 
-    params = list(range(pointer + 1, pointer + 1 + nParams.get(opcode)))
-    for i in range(nParams.get(opcode)):
-        if modes[i] == 0:
-            params[i] = intCode[params[i]]
+        leadingZeros = nParams.get(opcode) - len(modes)
+        modes = leadingZeros * [0] + modes
+        modes.reverse()
 
-    return (opcode, params)
+        params = list(range(pointer + 1, pointer + 1 + nParams.get(opcode)))
+        for i in range(nParams.get(opcode)):
+            if modes[i] == 0:
+                params[i] = intCode[params[i]]
+
+        return (opcode, params)
 
 
 programs = {
@@ -144,40 +146,41 @@ def runPhaseCodeSequence(seq):
     for val in seq:
         program = programs["boosters"]
         inputs = [val, res]
-        res = runIntCode(program, inputs)
+        amplifier = intCodeComputer(program)
+        res = amplifier.runIntCode(inputs)
     return res
 
 # Nonfunctional: no crash, but invalid results
-def runFeedbackCodeSequence(seq, programName="ex4"):
-    program = programs.get(programName)
+# def runFeedbackCodeSequence(seq, programName="ex4"):
+#     program = programs.get(programName)
 
-    vms = {
-        "a": [deepcopy(program), 0], 
-        "b": [deepcopy(program), 0], 
-        "c": [deepcopy(program), 0], 
-        "d": [deepcopy(program), 0], 
-        "e": [deepcopy(program), 0], 
-    }
+#     vms = {
+#         "a": [deepcopy(program), 0], 
+#         "b": [deepcopy(program), 0], 
+#         "c": [deepcopy(program), 0], 
+#         "d": [deepcopy(program), 0], 
+#         "e": [deepcopy(program), 0], 
+#     }
 
-    # initialize vms    
-    signal = 0
-    for fbc, vm in zip(seq, vms):
-        program, pointer = vms[vm]
-        signal, program, pointer = runIntCode(program, [fbc, signal], True, pointer)
-        vms[vm] = [program, pointer]
+#     # initialize vms    
+#     signal = 0
+#     for fbc, vm in zip(seq, vms):
+#         program, pointer = vms[vm]
+#         signal, program, pointer = runIntCode(program, [fbc, signal], True, pointer)
+#         vms[vm] = [program, pointer]
 
-    # feedback boosting
-    while True:
-        for vm in vms:
-            program, pointer = vms[vm]
-            signal, program, pointer = runIntCode(program, [signal], True, pointer)
-            vms[vm] = [program, pointer]
+#     # feedback boosting
+#     while True:
+#         for vm in vms:
+#             program, pointer = vms[vm]
+#             signal, program, pointer = runIntCode(program, [signal], True, pointer)
+#             vms[vm] = [program, pointer]
         
-        if program[pointer] == 99:
-            break
+#         if program[pointer] == 99:
+#             break
 
-    print(signal)
-    return signal
+#     print(signal)
+#     return signal
 
 
 def partTwo():
@@ -185,4 +188,4 @@ def partTwo():
     pass
 
 partOne()
-runFeedbackCodeSequence([9, 8, 7, 6, 5])
+# runFeedbackCodeSequence([9, 8, 7, 6, 5])
