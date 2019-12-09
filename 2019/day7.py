@@ -29,7 +29,7 @@ class intCodeComputer:
         self.program = deepcopy(program)
         self.pointer = deepcopy(pointer)
         self.inp = []
-        self.outp = []
+        self.out = []
 
 
     def test(self):
@@ -38,7 +38,7 @@ class intCodeComputer:
     def runIntCode(self, inputs):
         intCode = self.program
         pointer = self.pointer
-        out = -999
+
         # inputs = cleanInputs(inputs)
         while True:       
             opcode, par = self.parseInstruction()
@@ -52,7 +52,7 @@ class intCodeComputer:
                     break
                 intCode[par[0]] = inputs.pop(0)
             elif opcode == OUTP:
-                out = intCode[par[0]]
+                self.out = intCode[par[0]]
                 self.pointer += nParams.get(opcode) + 1
                 break
                 # print("Program output:" + str(intCode[par[0]]))
@@ -77,7 +77,7 @@ class intCodeComputer:
 
             self.pointer += nParams.get(opcode) + 1
 
-        return out
+        return self.out
 
         
 
@@ -150,42 +150,40 @@ def runPhaseCodeSequence(seq):
         res = amplifier.runIntCode(inputs)
     return res
 
-# Nonfunctional: no crash, but invalid results
-# def runFeedbackCodeSequence(seq, programName="ex4"):
-#     program = programs.get(programName)
 
-#     vms = {
-#         "a": [deepcopy(program), 0], 
-#         "b": [deepcopy(program), 0], 
-#         "c": [deepcopy(program), 0], 
-#         "d": [deepcopy(program), 0], 
-#         "e": [deepcopy(program), 0], 
-#     }
+def runFeedbackCodeSequence(seq, programName="boosters"):
+    program = programs.get(programName)
+    vms = [intCodeComputer(program) for i in range(5)]
 
-#     # initialize vms    
-#     signal = 0
-#     for fbc, vm in zip(seq, vms):
-#         program, pointer = vms[vm]
-#         signal, program, pointer = runIntCode(program, [fbc, signal], True, pointer)
-#         vms[vm] = [program, pointer]
+    # initialize vms
+    for fbc, vm in zip(seq, vms):
+        vm.runIntCode([fbc])
 
-#     # feedback boosting
-#     while True:
-#         for vm in vms:
-#             program, pointer = vms[vm]
-#             signal, program, pointer = runIntCode(program, [signal], True, pointer)
-#             vms[vm] = [program, pointer]
+    # feedback boosting
+    signal = 0
+    while True:
+        for vm in vms:
+            signal = vm.runIntCode([signal])
         
-#         if program[pointer] == 99:
-#             break
+        # print(vm.program[vm.pointer], signal)
+        
+        if vm.program[vm.pointer] == 99:
+            break
 
-#     print(signal)
-#     return signal
+    # print(signal)
+    return signal
 
 
 def partTwo():
-    # for all permtutations of feedbackcodes, find highest runFeedbackCodeSequence output
-    pass
+    phaseCodes = itertools.permutations(range(5, 10))
+    maxThrusters = 0
+
+    for order in phaseCodes:
+        thrust = runFeedbackCodeSequence(order)
+        if thrust > maxThrusters:
+            maxThrusters = thrust
+
+    print(maxThrusters)
 
 partOne()
-# runFeedbackCodeSequence([9, 8, 7, 6, 5])
+partTwo()
