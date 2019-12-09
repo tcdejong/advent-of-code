@@ -33,6 +33,7 @@ class intCodeComputer:
         self.relBase = 0
         self.inp = []
         self.out = []
+        self.done = False
 
 
     def test(self):
@@ -43,7 +44,7 @@ class intCodeComputer:
         pointer = self.pointer
 
         # inputs = cleanInputs(inputs)
-        while True:       
+        while True:
             opcode, par = self.parseInstruction()
 
             if opcode == ADD:
@@ -55,7 +56,7 @@ class intCodeComputer:
                     break
                 intCode[par[0]] = inputs.pop(0)
             elif opcode == OUTP:
-                self.out = intCode[par[0]]
+                self.out.append(intCode[par[0]])
                 self.pointer += nParams.get(opcode) + 1
                 break
                 # print("Program output:" + str(intCode[par[0]]))
@@ -74,6 +75,7 @@ class intCodeComputer:
             elif opcode == RELB:
                 self.relBase += intCode[par[0]]
             elif opcode == HALT:
+                self.done = True
                 break
             else:
                 print("Invalid instruction - Something went wrong!")
@@ -126,7 +128,6 @@ programs = {
 
 def listPrograms(error=False):
     message = "Program not found! Valid program names are:" if error else "Choose a program:"
-    
     print("-" * 20)
     print(message)
     for key in programs.keys():
@@ -137,4 +138,8 @@ def listPrograms(error=False):
 
 
 def partOne():
-    pass
+    vm = intCodeComputer(programs["ex1"])
+    vm.runIntCode([])
+    print(vm.out)
+
+partOne()
