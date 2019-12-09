@@ -31,7 +31,6 @@ def partOne(w, h):
 
 def partTwo(w, h):
     layers = getLayers(w, h)
-    toplayer = len(layers.keys()) - 1
     res = {}
 
     for y in range(h):
