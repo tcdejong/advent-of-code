@@ -49,6 +49,8 @@ def partOne():
 
 def partTwo():
     laser = partOne()
+    print("Deploying laser...")
+    print("Deployment succesful. Starting orbital clean-up. ")
     asteroids.remove(laser)
     targets = []
 
@@ -75,7 +77,7 @@ def partTwo():
 
             if shots == 200:
                 winner = target
-                print("partTwo output:", winner[0] * 100 + winner[1])
+                print("200th asteroid x*100+y:", winner[0] * 100 + winner[1])
                 break
 
             cycleShotDirections.add(angle)
