@@ -3,6 +3,7 @@ import os
 import sys
 
 filepath = os.path.join(sys.path[0], "day10.txt")
+# filepath = os.path.join(sys.path[0], "day10exp2.txt")
 
 asteroids = []
 
@@ -17,10 +18,13 @@ with open(filepath) as file:
 
 def findAngle(a, b):
     dx, dy = b[0] - a[0], b[1] - a[1]
-    ang = math.degrees(math.atan2(dx, dy))
-    ang = (360 - ((ang + 180) % 360)) % 360  # Eww
+    ang = math.degrees(math.atan2(dy, dx))
+    if ang < 0:
+        ang += 360
 
-    return ang
+    ang += 90
+
+    return ang % 360
 
 
 def partOne():
@@ -39,13 +43,12 @@ def partOne():
         if count > maxDetected:
             pick, maxDetected = ast, count
 
-    print(pick, maxDetected)
-    return hits
+    print(maxDetected, "detected from asteroid", pick, sep=" ")
+    return pick
 
 
 def partTwo():
-    laser = (22, 19)
-    # laser = (8, 3)
+    laser = partOne()
     asteroids.remove(laser)
     targets = []
 
@@ -67,8 +70,8 @@ def partTwo():
                 continue
 
             shots += 1
-            # print("Shot " + str(shots) + " fired! Target destroyed: ",
-            #       target, sep=" ")
+            print("Shot " + str(shots) + " fired! Target destroyed: ",
+                  target, sep=" ")
 
             if shots == 200:
                 winner = target
@@ -82,5 +85,4 @@ def partTwo():
             targets.remove(t)
 
 
-partOne()
 partTwo()
