@@ -32,7 +32,7 @@ def loadInput():
 
 #     return res
 
-def getNeighbors(workingSet):
+def getNeighbors(workingSet, world):
     res = dict()
     for r in workingSet:
         res[r] = set()
@@ -69,7 +69,7 @@ def partOne():
         workingNodes[r] = set([(x, y)])
 
     while True:
-        neighbors = getNeighbors(workingNodes)
+        neighbors = getNeighbors(workingNodes, world)
         counts = dict()
 
         for r, x, y in roots:
@@ -82,7 +82,6 @@ def partOne():
                 else:
                     counts[p] += 1
 
-        workingNodes.clear()
         for r in neighbors:
             workingNodes[r] = set()
             for p in neighbors[r]:
@@ -132,5 +131,5 @@ def partTwo():
     print(res)
 
 
-# partOne() # Slow, refactor TODO
+partOne()  # Slow, refactor TODO
 # partTwo()
