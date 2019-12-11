@@ -1,79 +1,106 @@
 import os
 import sys
 
-filePath = os.path.join(sys.path[0], "day6ex.txt")
 
-roots = []
+def loadInput():
+    filePath = os.path.join(sys.path[0], "day6.txt")
 
-with open(filePath) as file:
-    i = 0
-    for line in file:
-        line = line.strip()
-        x, y = line.split(", ")
-        roots.append(("r" + str(i), int(x), int(y)))
-        i += 1
+    roots = []
 
+    with open(filePath) as file:
+        i = 0
+        for line in file:
+            line = line.strip()
+            x, y = line.split(", ")
+            roots.append(("r" + str(i), int(x), int(y)))
+            i += 1
 
-def getPointsAtDistance(root, d):
-    r, rx, ry = root
-    xmin, xmax, ymin, ymax = rx - d, rx + d, ry - d, ry + d
-
-    top = [(r, x, ymax) for x in range(xmin, xmax)]
-    right = [(r, xmax, y) for y in range(ymax, ymin, -1)]
-    bot = [(r, x, ymin) for x in range(xmax, xmin, -1)]
-    left = [(r, xmin, y) for y in range(ymin, ymax)]
-
-    return top + right + bot + left
+    return roots
 
 
-def classificationComplete():
-    limit = (xmax + 1 - xmin) * (ymax + 1 - ymin)
-    current = sum(list(map(len, classification.values())))
+# def getPointsAtDistance(root, d):
+#     rx, ry = root
+#     xmin, xmax, ymin, ymax = rx - d, rx + d, ry - d, ry + d
 
-    return (current >= limit)
+#     top = [(x, ymax) for x in range(xmin, xmax)]
+#     right = [(xmax, y) for y in range(ymax, ymin, -1)]
+#     bot = [(x, ymin) for x in range(xmax, xmin, -1)]
+#     left = [(xmin, y) for y in range(ymin, ymax)]
+
+#     res = set()
+#     res.update(top, right, bot, left)
+
+#     return res
+
+def getNeighbors(workingSet):
+    res = dict()
+    for r in workingSet:
+        res[r] = set()
+        for (x, y) in workingSet[r]:
+            res[r].update([(x-1, y), (x+1, y), (x, y-1), (x, y+1)])
+
+    return res
 
 
-i = 0
-classification = {
-    "-": []
-}
+def partOne():
+    roots = loadInput()
 
-invalidRoots = set()
-observed = set()
-xvals, yvals = [x for (r, x, y) in roots], [y for (r, x, y) in roots]
-xmin, xmax = min(xvals) - 1, max(xvals) + 1
-ymin, ymax = min(yvals) - 1, max(yvals) + 1
+    # define world boundary to be a bounding box around all coordinates
+    xmin, xmax = min(roots, key=lambda r: r[1])[
+        1] - 1, max(roots, key=lambda r: r[1])[1] + 1
+    ymin, ymax = min(roots, key=lambda r: r[2])[
+        2] - 1, max(roots, key=lambda r: r[2])[2] + 1
 
-for (r, x, y) in roots:
-    classification[r] = []
+    world = set([(x, y) for x in range(xmin, xmax)
+                 for y in range(ymin, ymax)])
 
-while i < 350 and True:
-    i += 1
-    current = []
-    counts = dict()
+    assignedTo = dict()
+    workingNodes = dict()
+    observed = set()
 
     for (r, x, y) in roots:
-        neighbors = getPointsAtDistance((r, x, y), i)
-        current += neighbors
-        for (r, x, y) in neighbors:
-            if not (x, y) in counts:
-                counts[(x, y)] = 1
-            else:
-                counts[(x, y)] += 1
-
-    for point in current:
-        (r, x, y) = point
-        if counts[(x, y)] == 1 and not (x, y) in observed:
-            classification[r].append((x, y))
-            if x < xmin or x > xmax or y < ymin or y > ymax:
-                invalidRoots.add(r)
         observed.add((x, y))
+        assignedTo[r] = set([(x, y)])
+        workingNodes[r] = set([(x, y)])
 
-    if classificationComplete() == True:
-        break
+    while True:
+        neighbors = getNeighbors(workingNodes)
+        counts = dict()
 
-for key in invalidRoots:
-    classification.pop(key)
-largest = max(classification, key=lambda k: len(classification[k]))
-size = len(classification[largest])
-print(largest, size)
+        for r, x, y in roots:
+            for p in neighbors[r]:
+                if p in observed:
+                    continue
+
+                if not p in counts:
+                    counts[p] = 1
+                else:
+                    counts[p] += 1
+
+        workingNodes.clear()
+        for r in neighbors:
+            workingNodes[r] = set()
+            for p in neighbors[r]:
+                if not p in counts:
+                    continue
+
+                if counts[p] == 1:
+                    assignedTo[r].add(p)
+                    workingNodes[r].add(p)
+
+            observed.update(neighbors[r])
+
+        if observed.issuperset(world):
+            break
+        else:
+            workingNodes = neighbors
+
+    largest = 0
+    for r in assignedTo:
+        if assignedTo[r] <= world and len(assignedTo[r]) > largest:
+            largest = len(assignedTo[r])
+
+    print(largest)
+
+
+partOne()
