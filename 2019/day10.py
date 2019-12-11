@@ -49,8 +49,6 @@ def partOne():
 
 def partTwo():
     laser = partOne()
-    print("Deploying laser...")
-    print("Deployment succesful. Starting orbital clean-up. ")
     asteroids.remove(laser)
     targets = []
 
@@ -60,28 +58,23 @@ def partTwo():
     targets.sort(key=lambda t: (t[2], t[1]))
 
     shots = 0
-    while shots < 200 and len(targets):
-        cycleShotDirections = set()
+    lastDir = 361
+    while targets:
         shot = []
 
-        for i in range(len(targets)):
-            t = targets[i]
-            target, dist, angle = t[0], t[1], t[2]
-
-            if angle in cycleShotDirections:
+        for t in targets:
+            target, dist, angle = t
+            if angle == lastDir:
                 continue
 
             shots += 1
-            print("Shot " + str(shots) + " fired! Target destroyed: ",
-                  target, sep=" ")
+            lastDir = angle
+            shot.append(t)
 
             if shots == 200:
                 winner = target
                 print("200th asteroid x*100+y:", winner[0] * 100 + winner[1])
                 break
-
-            cycleShotDirections.add(angle)
-            shot.append(t)
 
         for t in shot:
             targets.remove(t)
