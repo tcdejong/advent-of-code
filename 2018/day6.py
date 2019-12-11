@@ -42,9 +42,7 @@ def getNeighbors(workingSet):
     return res
 
 
-def partOne():
-    roots = loadInput()
-
+def buildWorld(roots):
     # define world boundary to be a bounding box around all coordinates
     xmin, xmax = min(roots, key=lambda r: r[1])[
         1] - 1, max(roots, key=lambda r: r[1])[1] + 1
@@ -53,6 +51,13 @@ def partOne():
 
     world = set([(x, y) for x in range(xmin, xmax)
                  for y in range(ymin, ymax)])
+
+    return world
+
+
+def partOne():
+    roots = loadInput()
+    world = buildWorld(roots)
 
     assignedTo = dict()
     workingNodes = dict()
@@ -103,4 +108,29 @@ def partOne():
     print(largest)
 
 
-partOne()
+def addedDistance(p, roots):
+    x0, y0 = p
+    res = 0
+
+    for (r, x1, y1) in roots:
+        res += abs(x1-x0) + abs(y1-y0)
+
+    return res
+
+
+def partTwo():
+    roots = loadInput()
+    world = buildWorld(roots)
+
+    res = 0
+    thresh = 10000
+    for p in world:
+        d = addedDistance(p, roots)
+        if d < thresh:
+            res += 1
+
+    print(res)
+
+
+# partOne() # Slow, refactor TODO
+# partTwo()
