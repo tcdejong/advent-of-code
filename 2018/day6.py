@@ -18,31 +18,7 @@ def loadInput():
     return roots
 
 
-# def getPointsAtDistance(root, d):
-#     rx, ry = root
-#     xmin, xmax, ymin, ymax = rx - d, rx + d, ry - d, ry + d
-
-#     top = [(x, ymax) for x in range(xmin, xmax)]
-#     right = [(xmax, y) for y in range(ymax, ymin, -1)]
-#     bot = [(x, ymin) for x in range(xmax, xmin, -1)]
-#     left = [(xmin, y) for y in range(ymin, ymax)]
-
-#     res = set()
-#     res.update(top, right, bot, left)
-
-#     return res
-
-def getNeighbors(workingSet, world):
-    res = dict()
-    for r in workingSet:
-        res[r] = set()
-        for (x, y) in workingSet[r]:
-            res[r].update([(x-1, y), (x+1, y), (x, y-1), (x, y+1)])
-
-    return res
-
-
-def buildWorld(roots):
+def buildWorld(roots, worldOnly=False):
     # define world boundary to be a bounding box around all coordinates
     xmin, xmax = min(roots, key=lambda r: r[1])[
         1] - 1, max(roots, key=lambda r: r[1])[1] + 1
@@ -52,66 +28,71 @@ def buildWorld(roots):
     world = set([(x, y) for x in range(xmin, xmax)
                  for y in range(ymin, ymax)])
 
-    return world
+    if worldOnly:
+        return world
+    else:
+        return (world, xmin, xmax, ymin, ymax)
 
 
 def partOne():
     roots = loadInput()
-    world = buildWorld(roots)
+    world, xmin, xmax, ymin, ymax = buildWorld(roots)
 
     assignedTo = dict()
-    workingNodes = dict()
-    observed = set()
+    infRoots = set()
 
-    for (r, x, y) in roots:
-        observed.add((x, y))
-        assignedTo[r] = set([(x, y)])
-        workingNodes[r] = set([(x, y)])
+    for p in world:
+        closest = findClosestRoot(p, roots)
 
-    while True:
-        neighbors = getNeighbors(workingNodes, world)
-        counts = dict()
+        if closest == -1:
+            continue
 
-        for r, x, y in roots:
-            for p in neighbors[r]:
-                if p in observed:
-                    continue
+        x, y = p
+        if not xmin <= x <= xmax or not ymin <= y <= ymax:
+            infRoots.add(closest)
+            continue
 
-                if not p in counts:
-                    counts[p] = 1
-                else:
-                    counts[p] += 1
+        if not closest in assignedTo:
+            assignedTo[closest] = 0
 
-        for r in neighbors:
-            workingNodes[r] = set()
-            for p in neighbors[r]:
-                if not p in counts:
-                    continue
+        assignedTo[closest] += 1
 
-                if counts[p] == 1:
-                    assignedTo[r].add(p)
-                    workingNodes[r].add(p)
+    maxAssigned = 0
+    for (r, _, _) in roots:
+        if r in infRoots:
+            continue
 
-            observed.update(neighbors[r])
+        if assignedTo[r] > maxAssigned:
+            maxAssigned = assignedTo[r]
 
-        if observed.issuperset(world):
-            break
-        else:
-            workingNodes = neighbors
+    print(maxAssigned)
 
-    largest = 0
-    for r in assignedTo:
-        if assignedTo[r] <= world and len(assignedTo[r]) > largest:
-            largest = len(assignedTo[r])
 
-    print(largest)
+def findClosestRoot(p, roots):
+    x0, y0 = p
+
+    distances = dict()
+
+    for (r, x1, y1) in roots:
+        d = abs(x1-x0) + abs(y1-y0)
+
+        if d not in distances:
+            distances[d] = set()
+
+        distances[d].add(r)
+
+    minDist = min(distances)
+    if len(distances[minDist]) == 1:
+        return distances[minDist].pop()
+    else:
+        return -1
 
 
 def addedDistance(p, roots):
     x0, y0 = p
     res = 0
 
-    for (r, x1, y1) in roots:
+    for (_, x1, y1) in roots:
         res += abs(x1-x0) + abs(y1-y0)
 
     return res
@@ -119,7 +100,7 @@ def addedDistance(p, roots):
 
 def partTwo():
     roots = loadInput()
-    world = buildWorld(roots)
+    world = buildWorld(roots, True)
 
     res = 0
     thresh = 10000
@@ -131,5 +112,5 @@ def partTwo():
     print(res)
 
 
-partOne()  # Slow, refactor TODO
-# partTwo()
+partOne()
+partTwo()
