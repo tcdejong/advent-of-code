@@ -105,11 +105,7 @@ def partOne(inputStr):
 
 def partTwo(inputStr):
     bodies = createBodies(inputStr)
-    states = {
-        "x": dict(),
-        "y": dict(),
-        "z": dict()
-    }
+    state0 = dict()
 
     cycletime = dict()
 
@@ -124,18 +120,18 @@ def partTwo(inputStr):
         for body in bodies:
             body.applyVelocity()
 
-        for axis in states:
+        for axis in ["x", "y", "z"]:
             if axis in cycletime:
                 continue
 
             state = [(body.p[axis], body.v[axis]) for body in bodies]
             state = tuple(state)
 
-            if state in states[axis]:
+            if t == 0:
+                state0[axis] = state
+            elif state == state0[axis]:
                 cycletime[axis] = t
                 continue
-
-            states[axis][state] = t
 
         if len(cycletime) == 3:
             print(cycletime)
@@ -150,22 +146,21 @@ def partTwo(inputStr):
 def lcm(args):
     if len(args) == 2:
         a, b = args
+
+        if a == b:
+            return a
+
+        return abs(a * b) // gcd(a, b)
+
     else:
-        a, b = args[0], lcm(args[1:])
-
-    if a == b:
-        return a
-    elif a < b:
-        lo, hi = a, b
-    else:
-        lo, hi = b, a
-
-    n = 1
-    while (n * hi) % lo != 0:
-        n += 1
-
-    return n * hi
+        res = args[0]
+        for i in args:
+            res = lcm([res, i])
+        return res
 
 
 partOne(puzzle)
 partTwo(puzzle)
+
+# times = [161428, 167624, 193052]
+# print(lcm(times))
