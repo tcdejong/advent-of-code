@@ -3,4 +3,4 @@ Advent of Code (AoC) is an annual coding challenge hosted at [adventofcode.com](
 
 This repository contains my Python solutions - of various degrees of optimizations - for AoC. Its contents are the result of a self-directed learning process, as well as experimentation. Code inside is a mix of the two and not representative of what I consider "proper" code. 
 
-The puzzle descriptions can be found at [AoC's website](https://adventofcode.com/2019/events).
+The puzzle descriptions can be found at [AoC's website](https://adventofcode.com/2019/events). They are not included in the repository given [the creator's comments about this practice](https://www.reddit.com/r/adventofcode/comments/e4mkjq/allowed_to_use_problem_text_as_github_readme/).
