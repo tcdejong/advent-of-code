@@ -179,11 +179,6 @@ def partOne(ex=0):
     minManhattan = min([n.manhattanToOrig() for n in intersections])
     return minManhattan
 
-assert partOne(1) == 159
-assert partOne(2) == 135
-    
-print(f"Part one: {partOne()}")
-
 
 def partTwo(ex=0):
     wireA, wireB = readInput(ex)
@@ -192,6 +187,12 @@ def partTwo(ex=0):
     minSignalDelay = min([stepsA[i] + stepsB[i] for i in intersections])
     
     return minSignalDelay
+
+
+assert partOne(1) == 159
+assert partOne(2) == 135
+    
+print(f"Part one: {partOne()}")
 
 
 assert partTwo(1) == 610

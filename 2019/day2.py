@@ -51,7 +51,6 @@ assert runIntCode(ex2) == 2
 assert runIntCode(ex3) == 2
 assert runIntCode(ex4) == 30
 
-
 # Part one execution
 modifiedProgram = [i for i in program]
 modifiedProgram[1], modifiedProgram[2] = 12, 2
