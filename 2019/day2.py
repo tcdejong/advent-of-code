@@ -32,6 +32,18 @@ def runIntCode(program):
     return intCode[0]
 
 
+def findIntCodeInput(target):
+    for noun in range(100):
+        for verb in range(100):
+            # workingMemory = copy.deepcopy(memory)
+            workingMemory = [i for i in program]
+            workingMemory[1] = noun
+            workingMemory[2] = verb
+            res = runIntCode(workingMemory)
+            if (res == target):
+                return 100 * noun + verb
+
+
 # Part one tests
 assert runIntCode(ex0) == 3500
 assert runIntCode(ex1) == 2
@@ -44,18 +56,6 @@ assert runIntCode(ex4) == 30
 modifiedProgram = [i for i in program]
 modifiedProgram[1], modifiedProgram[2] = 12, 2
 print(f'Part one: {runIntCode(modifiedProgram)}')
-
-
-def findIntCodeInput(target):
-    for noun in range(100):
-        for verb in range(100):
-            # workingMemory = copy.deepcopy(memory)
-            workingMemory = [i for i in program]
-            workingMemory[1] = noun
-            workingMemory[2] = verb
-            res = runIntCode(workingMemory)
-            if (res == target):
-                return 100 * noun + verb
 
 
 # Part two execution
