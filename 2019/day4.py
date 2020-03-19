@@ -1,53 +1,76 @@
-num_digits = 6
-
+NUM_DIGITS = 6
+ERR_DESCENDING = -1
+ERR_NO_GROUP = -2
+OK = 1
 
 def meetsCriteria(password, part=1):
+    digits = [int(i) for i in str(password)]
 
-    pwdAsList = []
-    critNeverDecreases = True
-    critSameAdjacent = False
+    last = -1
+    groups = set()
+    groupLen = 1
 
-    for i in range(num_digits-1, -1, -1):
-        cur = password // (10 ** i)
-        if len(pwdAsList) > 0:
-            if cur < pwdAsList[-1]:
-                critNeverDecreases = False
-            elif part == 1 and cur == pwdAsList[-1]:
-                critSameAdjacent = True
+    for d in digits:
+        if d < last:
+            return ERR_DESCENDING
+        elif d == last:
+            groupLen += 1
+        else:
+            groups.add(groupLen)
+            groupLen = 1
+            last = d
+    else:
+        groups.add(groupLen)
 
-        password -= cur * (10 ** i)
-        pwdAsList.append(cur)
+    if part == 1:
+        if 1 in groups:
+            groups.remove(1)
+        
+        if len(groups) == 0:        
+            return ERR_NO_GROUP
 
-    # A password of length i has (i-1) adjacent digits
-    # check if digit i and i+1 form a pair
-    if part == 2:
-        for i in range(num_digits - 1):
-            if i == 0:
-                if pwdAsList[i] == pwdAsList[i+1] != pwdAsList[i+2]:
-                    critSameAdjacent = True
-                    break
-            elif i == (num_digits - 2):
-                if pwdAsList[i-1] != pwdAsList[i] == pwdAsList[i+1]:
-                    critSameAdjacent = True
-                    break
-            elif pwdAsList[i-1] != pwdAsList[i] == pwdAsList[i+1] != pwdAsList[i+2]:
-                critSameAdjacent = True
-                break
-
-    return (critSameAdjacent and critNeverDecreases)
+    elif 2 not in groups:
+        return ERR_NO_GROUP
+    
+    return OK
 
 
-def day4(lbound, rbound, part):
+def nextPassword(password, res):
+    if res == ERR_DESCENDING:
+        digits = [int(i) for i in str(password)]
+        last = -1
 
-    validPasswords = []
-    for pwd in range(lbound, rbound):
-        if meetsCriteria(pwd, part):
-            validPasswords.append(pwd)
+        for i, d in enumerate(digits):
+            if d < last:
+               break
+            else:
+                last = d
+        
+        newPassword = [*digits[:i], *[last for _ in range(NUM_DIGITS-i)]]
+        return int(''.join(map(str,newPassword)))
+    else:
+        return password + 1
 
-    return len(validPasswords)
+     
+def countValidPasswords(password, ubound, part):
+    n = 0
+
+    while password <= ubound:
+        res = meetsCriteria(password, part)
+        if res == OK:
+            n += 1    
+        password = nextPassword(password, res)
+
+    return n
+        
+
+assert meetsCriteria(111111, 1) == OK
+assert meetsCriteria(223450, 1) == ERR_DESCENDING
+assert meetsCriteria(123789, 1) == ERR_NO_GROUP
+print(f"Part one: {countValidPasswords(168630, 718098, 1)}")
 
 
-print(day4(168630, 718098, 1))
-print(day4(168630, 718098, 2))
-
-# print(list(str(123456)))
+assert meetsCriteria(112233, 2) == OK
+assert meetsCriteria(123444, 2) == ERR_NO_GROUP
+assert meetsCriteria(111122, 2) == OK
+print(f"Part two: {countValidPasswords(168630, 718098, 2)}")
