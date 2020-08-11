@@ -46,7 +46,6 @@ def pos_after_step(x, y, direction):
 
 
 if __name__ == "__main__":
-    # convert puzzle input into list of (w,h,l) integer tuples
     with open("day3.txt") as file:
         puzzle_input = list(file.readline())
 
