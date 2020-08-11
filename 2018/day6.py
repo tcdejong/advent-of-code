@@ -20,13 +20,10 @@ def loadInput():
 
 def buildWorld(roots, worldOnly=False):
     # define world boundary to be a bounding box around all coordinates
-    xmin, xmax = min(roots, key=lambda r: r[1])[
-        1] - 1, max(roots, key=lambda r: r[1])[1] + 1
-    ymin, ymax = min(roots, key=lambda r: r[2])[
-        2] - 1, max(roots, key=lambda r: r[2])[2] + 1
+    xmin, xmax = min(roots, key=lambda r: r[1])[1] - 1, max(roots, key=lambda r: r[1])[1] + 1
+    ymin, ymax = min(roots, key=lambda r: r[2])[2] - 1, max(roots, key=lambda r: r[2])[2] + 1
 
-    world = set([(x, y) for x in range(xmin, xmax)
-                 for y in range(ymin, ymax)])
+    world = set([(x, y) for x in range(xmin, xmax) for y in range(ymin, ymax)])
 
     if worldOnly:
         return world
