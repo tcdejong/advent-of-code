@@ -9,12 +9,14 @@ example = [
 
 
 def part_one(expenses, target = 2020):
-    expense_set = set(expenses)
+    seen = set()
 
     for a in expenses:
         remainder = target - a
-        if remainder in expense_set:
+        if remainder in seen:
             return a * remainder
+        else:
+            seen.add(a)
 
 
 def part_two(expenses):
