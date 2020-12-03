@@ -7,7 +7,7 @@ def read_input():
     return grid
 
 
-def traverse_grid(dx, dy):
+def count_trees(dx, dy):
     grid = read_input()
     x, y = 0, 0
     x_lim = len(grid[0])
@@ -25,7 +25,7 @@ def traverse_grid(dx, dy):
 
 
 def part_one():
-    print(traverse_grid(3,1))
+    print(count_trees(3,1))
 
 
 def part_two():
@@ -37,7 +37,7 @@ def part_two():
         (1, 2),
     ]
 
-    trees = (traverse_grid(dx, dy) for (dx,dy) in step_sizes)
+    trees = (count_trees(dx, dy) for (dx,dy) in step_sizes)
 
     print(prod(trees))
 
