@@ -1,9 +1,7 @@
 from collections import defaultdict
-from pathlib import Path
 
-def read_input():
-    fp = Path('day10.txt')
-    with open(fp) as file:
+def read_input(file_path='day10.txt'):
+    with open(file_path) as file:
         return [int(i) for i in file.readlines()]
 
 
@@ -20,7 +18,7 @@ def part_one():
     
 
 def part_two():
-    adapters = read_input()
+    adapters = read_input('day10ante.txt')
     adapters.sort()
 
     jolts = [0, *adapters, adapters[-1] + 3]
@@ -37,12 +35,25 @@ def part_two():
             if diff <= 3:
                 num_paths[i+j] += num_paths[i]
 
-    print(num_paths[-1])
+    return num_paths[-1]
 
 
 if __name__ == '__main__':
-    part_one()
-    part_two()
+    # part_one()
+    res = part_two()
+    print('found result, truncating...')
+
+    res = str(res)
+
+    
+
+    i = -1
+    while res[i] == "0":
+        i -= 1
+
+    res = res[:i+1]
+
+    print(res[-10:])
 
 
 
