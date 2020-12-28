@@ -92,17 +92,9 @@ def part_two(constraints, my, nearby):
     print(f'Part Two: {result}')
     
 
-
-
-
-
 if __name__ == '__main__':
     # constraints, my, nearby = read_input('day16ex.txt')
     constraints, my, nearby = read_input()
 
     part_one(nearby, constraints)
     part_two(constraints, my, nearby)
-
-    
-
-    
