@@ -51,16 +51,18 @@ def solve_simple(expression: str, part=1) -> int:
 
     elif part==2:
         # Solve all + operations first, then use p1 for remainder.
-        while '+' in expression:
-            i = expression.index('+')
+
+        # Find indexes of '+' operators
+        plus_idx = [i for i,c in enumerate(expression) if c == '+']
+        # Reverse order to avoid index/slicing shenanigans when inserting substitutions
+        plus_idx.reverse() 
+
+        for i in plus_idx:
             l = int(expression[i - 1])
             r = int(expression[i + 1])
 
             res = str(l + r)
             
-            if len(expression) == 3:
-                break
-                
             expression = [*expression[:i-1], res, *expression[i+2:]]
 
         expression = ' '.join(expression)
