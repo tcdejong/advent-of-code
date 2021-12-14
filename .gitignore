@@ -1,8 +1,6 @@
 
-.vscode/.ropeproject/
-.vscode/settings.json
+.vscode/
 2019/day4_Newti.py
-.vscode/launch.json
 .mypy_cache/
 2019/__pycache__/
 2019/.mypy_cache/
