@@ -1,33 +1,39 @@
-from collections import Counter
+from collections import Counter, defaultdict
 
 
 def read_input() -> list[int]:
     with open("day6.txt") as f:
         data = f.read()
 
-    return list(map(int, data.split(",")))
+    data = list(map(int, data.split(",")))
+    fish_counts = Counter(data)
+    return fish_counts
 
-def simulate_fish(ticks: int):
-    fish = read_input()
 
-    for i in range(ticks):
-        # print(i, len(fish))
+def simulate_fish(ticks: int, fish = None):
+    fish = fish if fish else read_input()
+    for _ in range(ticks):
         fish = tick_fish(fish)
+    return sum(fish.values())
 
-    return len(fish)
 
-def tick_fish(fish) -> list[int]:
-    fish = [f-1 for f in fish] # tick
-    new_fish = [8 for f in fish if f < 0] # spawn
-    fish = [6 if f < 0 else f for f in fish] # correct
-    return fish + new_fish # return
+def tick_fish(fish):
+    new_fish = defaultdict(int)
+
+    for timer in range(0,8):
+        new_fish[timer] = fish[timer+1]
+
+    new_fish[8] += fish[0]
+    new_fish[6] += fish[0]
+
+    return new_fish
+
 
 def part_one():
     return simulate_fish(80)
 
 def part_two():
     return simulate_fish(256)
-
 
 
 if __name__ == '__main__':
