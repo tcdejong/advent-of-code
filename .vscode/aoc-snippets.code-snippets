@@ -15,18 +15,24 @@
 	// 	],
 	// 	"description": "Log output to console"
 	// }
-	"Module docstring": {
-		"prefix": "docstr",
+	"template": {
+		"prefix": "aoc template",
 		"body": [
-			"\"\"\"", 
-			"Day # of Advent of Code's 2021 edition.",
+			"def read_input(filename: str):",
+			"    pass",
 			"",
-			"\tStatus:",
-			"\t\tPart 1: ",
-			"\t\tPart 2: ",
 			"",
-			"\"\"\""
-		],
-		"description": "Default docstring for AoC 2021 entries."
+			"def part_one():",
+			"    pass",
+			"",
+			"",
+			"def part_two():",
+			"    pass",
+			"",
+			"",
+			"if __name__ == '__main__':",
+			"    print(f'Part one: {part_one()}')",
+			"    print(f'Part two: {part_two()}')"
+		  ],
 	}
 }
