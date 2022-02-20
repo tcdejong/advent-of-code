@@ -18,7 +18,6 @@ def part_one():
     return flashes
 
 
-
 def step_once(octopi):
     has_flashed = set()
 

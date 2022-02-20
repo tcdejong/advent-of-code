@@ -29,7 +29,6 @@ def find_lowpoints(heightmap):
     return lowpoints
 
 
-
 def find_row_mins(row: str):
     """Find the local minimums in this row, only considering neighbors in the same row"""
     row = [int(c) for c in row]
@@ -75,7 +74,6 @@ def determine_basin(lowpoint: tuple[int, int], heightmap):
     return size
 
 
-
 def get_neighbors(x,y,hm):
     max_x = len(hm[0]) - 1
     max_y = len(hm) - 1
@@ -95,8 +93,6 @@ def get_neighbors(x,y,hm):
         nb.add((x, y+1))
 
     return nb
-
-
 
 
 if __name__ == '__main__':

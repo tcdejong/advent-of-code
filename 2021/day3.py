@@ -60,8 +60,6 @@ def filter_bits(bits: list[str], most_frequent=True):
             return(val)
 
 
-        
-
 def bin_str(x: int) -> str:
     return "{0:b}".format(x)
 

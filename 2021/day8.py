@@ -43,10 +43,6 @@ def part_one():
     return out_count
 
 
-         
-
-
-
 def part_two():
     data = read_input()
     return sum(decode_output(entry) for entry in data)
@@ -163,10 +159,6 @@ def decode_output(entry):
     disp_inverted = {v: k for k, v in displays.items()}
     output_decimals = [str(disp_inverted[x]) for x in output]
     return int("".join(output_decimals))
-
-    
-
-
 
 
 if __name__ == '__main__':

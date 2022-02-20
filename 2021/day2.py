@@ -8,7 +8,6 @@ def read_input():
     return instructions
 
 
-
 def part_one(instructions):
     @dataclass
     class Submarine:
@@ -36,7 +35,6 @@ def part_one(instructions):
         sub.perform_instruction(inst)
 
     return sub.h_pos * sub.depth
-
 
 
 def part_two(instructions):
@@ -68,9 +66,6 @@ def part_two(instructions):
         sub.perform_instruction(inst)
 
     return sub.h_pos * sub.depth
-
-
-
 
 
 if __name__ == "__main__":
