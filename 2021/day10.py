@@ -1,6 +1,3 @@
-from typing import Counter
-
-
 L_CHARS = "([{<"
 R_CHARS = ")]}>"
 L_FROM_R = {k:v for k, v in zip(R_CHARS, L_CHARS)}
@@ -19,7 +16,6 @@ SCORES_P2 = {
     '}': 3,
     '>': 4,
 }
-
 
 
 def read_input(filename: str = 'day10.txt'):

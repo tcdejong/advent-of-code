@@ -26,7 +26,6 @@ def print_dots(dots: set[tuple[int,int]]) -> None:
         print(row)
 
 
-
 def part_one():
     dots, folds = read_input()
 

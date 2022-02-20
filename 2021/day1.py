@@ -32,7 +32,6 @@ if __name__ == '__main__':
     print(f'Part two: {part_two(depths)}')
 
 
-
 # 0     199  A      
 # 1     200  A B    
 # 2     208  A B C  

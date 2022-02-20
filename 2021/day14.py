@@ -1,11 +1,9 @@
-from collections import Counter
+from collections import Counter, defaultdict
 import itertools
-import pandas as pd
 import numpy as np
+import pandas as pd
 from functools import reduce
-from collections import defaultdict
 
-Pair = tuple[str, str]
 
 def read_input(filename: str = 'day14.txt'):
     with open(filename) as f:
