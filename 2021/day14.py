@@ -3,6 +3,7 @@ import itertools
 import pandas as pd
 import numpy as np
 from functools import reduce
+from collections import defaultdict
 
 Pair = tuple[str, str]
 
@@ -57,12 +58,9 @@ def part_one():
     return diff_maxmin_freq_after_n_iterations(10)
 
 
-def part_two(iterations=40, polymer=None):
-    # read insertion rules
-    _polymer, rules = read_input() 
-
-    if not polymer:
-        polymer = _polymer
+def part_two(use_ex=False, iterations=40):
+    input_name = 'day14ex.txt' if use_ex else 'day14.txt'
+    polymer, rules = read_input(input_name) 
 
     # Determine all elements from the rules and input polymer
     # Generate a transition matrix
@@ -70,50 +68,35 @@ def part_two(iterations=40, polymer=None):
     mat = reduce(lambda a,b: a@b, (mat for _ in range(iterations)))
 
     # Turn starting polymer to state vector, with same format as transition matrix, then multiply
-    state = polymer_to_state(polymer, mat.index)
-
-    print(state.index)
-    print(mat.index)
-    print(mat.columns)
-
+    state = polymer_to_state(polymer).reindex_like(mat).fillna(0)
     new_state = state @ mat
-    print(new_state.loc[new_state > 0])
 
     answer = state_to_answer(new_state, polymer)
 
-    vars = {
-        'answer': answer, 
-        'mat': mat
-    }
-    return vars
+    return answer
 
 
 def state_to_answer(state: pd.Series, starting_polymer):
     """Take the quantity of the most common element and subtract the quantity of the least common element"""
-    print(state)
 
     # Retrieve all individual elements
     elements = set(char for key in state.index for char in key)
 
-    # Determine counts per element
+    # Determine counts per element by looking at pairs that start with it
+    # eg for A include AB and AC, but not CA.
+    # This will miss counting the very last element, because it doesn't appear at the start of a pair!
     counts = Counter()
-    for element in elements:
-        key_contains_element = [element in key for key in state.index]
-        counts[element] += state.loc[key_contains_element].sum()
+    for element in elements:        
+        include_pair = state.index.str.startswith(element)
+        pairs = state.loc[include_pair]
+        summed = pairs.sum()
+        counts[element] += summed
 
-    # account for double-counting of all inner elements
-    first_char = starting_polymer[0]
+    # compensate for missing the last element
     last_char = starting_polymer[-1]
-
-    print(f'{starting_polymer=}')
-
-    counts[first_char] += 1
     counts[last_char] += 1
-    for key, val in counts.items():
-        counts[key] = val / 2
 
     sorted_counts = counts.most_common()
-    print(sorted_counts)
 
     return int(sorted_counts[0][1] - sorted_counts[-1][1])
 
@@ -125,7 +108,7 @@ def generate_pair_matrix(polymer, rules):
     E.g. 1 NB -> 1 NB
     """
     # Turn rules into a dict
-    rule_dict = {tuple(pair): inserted for pair, inserted in rules}
+    rule_dict = {pair: inserted for pair, inserted in rules}
 
     # Generate list of all used elements
     rule_chars = "".join(["".join(r) for r in rules])
@@ -134,6 +117,7 @@ def generate_pair_matrix(polymer, rules):
 
     # Generate all possible pairs
     pairs = list(itertools.product(chars, repeat=2))
+    pairs = [''.join(pair) for pair in pairs]
 
     # Generate empty transition matrix
     mat = pd.DataFrame(index=pairs, columns=pairs).fillna(0)
@@ -146,7 +130,7 @@ def generate_pair_matrix(polymer, rules):
         
         else:
             inserted = rule_dict[pair]
-            new_pairs = [(pair[0], inserted), (inserted, pair[1])]
+            new_pairs = [pair[0] + inserted, inserted + pair[1]]
 
             for newp in new_pairs:
                 mat.at[pair, newp] += 1
@@ -154,26 +138,17 @@ def generate_pair_matrix(polymer, rules):
     return mat
 
 
-def polymer_to_state(polymer: str, index=pd.Index):
-    state = pd.Series(index=index, dtype=int).fillna(0)
+def polymer_to_state(polymer: str):
+    state = defaultdict(int)
     polymer = list(polymer)
 
-    for pair in zip(polymer, polymer[1:]):
-        state.at[pair] += 1
+    for tuplepair in zip(polymer, polymer[1:]):
+        pair = "".join(tuplepair)
+        state[pair] += 1
 
-    return state
+    return pd.Series(state)
 
 
 if __name__ == '__main__':
-    # print(f'Part one: {part_one()}')
-    # print(f'Part two: {part_two(polymer = "NNCB", iterations=1)}')
-
-    vars = part_two(polymer = "NNCB", iterations=1)
-
-    for k,v in vars.items():
-        print(k, v)
-
-    # polymer, rules = read_input()
-    # df = generate_pair_matrix(polymer, rules)
-
-    # 2071495732310 => too low
+    print(f'Part one: {part_one()}')
+    print(f'Part two: {part_two()}')
