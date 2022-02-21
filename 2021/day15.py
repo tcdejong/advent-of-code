@@ -24,8 +24,6 @@ def part_two(use_example):
     navi = CaveNavigator(new_map)
     return navi.navigate()
 
-    # 6182 too high
-
 
 def update_cavemap(cavemap: dict[Position: int]):
     # For each point generate 4 points repeated on x
@@ -49,6 +47,7 @@ def update_cavemap(cavemap: dict[Position: int]):
                 new_map[new_pos] = new_risk
 
     return new_map
+
 
 @dataclass
 class CaveNavigator:
@@ -172,10 +171,8 @@ if __name__ == '__main__':
     assert part_two(True) == 315
     
     USE_EX = False
-    # print(f'Part one: {part_one(USE_EX)}')
+    print(f'Part one: {part_one(USE_EX)}')
     print(f'Part two: {part_two(USE_EX)}')
 
-    # cavemap = read_input(USE_EX)
-    # new_map = update_cavemap(cavemap)
-    # print_cavemap(new_map)
+
 
