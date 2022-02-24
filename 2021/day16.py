@@ -1,11 +1,19 @@
 from collections import namedtuple
-from math import ceil
+from math import ceil, prod
 
 from rich.traceback import install
 install(show_locals=True)
 
 
+PTYPE_SUM = 0
+PTYPE_MUL = 1
+PTYPE_MIN = 2
+PTYPE_MAX = 3
 PTYPE_LITERAL = 4
+PTYPE_GT = 5
+PTYPE_LT = 6
+PTYPE_EQ = 7
+
 Packet = namedtuple("Packet", ['version', 'type', 'value', 'binstr'])
 
 
@@ -31,51 +39,11 @@ def read_packet(binstr: str):
     packet_type = int(bin_type, 2)
 
     read_func = read_literal if packet_type == PTYPE_LITERAL else read_operator
-    
     packet, remainder = read_func(binstr, packet_version, packet_type)
     
     return packet, remainder
 
-    
-def read_operator(binstr, packet_version, packet_type):
-    length_type_id = binstr[6]
-    mode = 'numbits' if length_type_id == "0" else 'numpackets'
-    type_length = 15 if mode == 'numbits' else 11
 
-    subpacket_len_bits = binstr[7:7+type_length]
-    subpacket_len = int(subpacket_len_bits,2)
-
-    payload = binstr[7+type_length:]
-    numbits = 0
-    numpackets = 0
-    processed = 0
-    data = []
-
-    # print(f'\nReading operator packet')
-    # print(f'{packet_version=}, {mode=}, {subpacket_len=}')
-    # print(binstr)
-    # print(binstr[:7])
-    # print('       ', subpacket_len_bits, sep="")
-    # print(subpacket_bits.rjust(len(binstr)), sep="")
-
-    while processed < subpacket_len:
-        packet, payload = read_packet(payload)
-        data.append(packet)
-
-        numbits += len(packet.binstr)
-        numpackets += 1
-
-        processed = numbits if mode == 'numbits' else numpackets
-
-        if processed > subpacket_len:
-            print('Warning! processed > subpacket_len')
-
-    packet_len = 7+type_length+numbits
-    p = Packet(packet_version, packet_type, data, binstr[:packet_len])
-
-    return p, payload
-
-    
 def read_literal(binstr, packet_version, packet_type):
     # print(f'Reading literal packet {packet_version=} {binstr=}')
     data_bits = binstr[6:]
@@ -97,13 +65,80 @@ def read_literal(binstr, packet_version, packet_type):
 
     return Packet(packet_version, packet_type, value, binstr[:length]), binstr[length:]
 
+    
+def read_operator(binstr, packet_version, packet_type):
+    length_type_id = binstr[6]
+    mode = 'numbits' if length_type_id == "0" else 'numpackets'
+    type_length = 15 if mode == 'numbits' else 11
+
+    subpacket_len_bits = binstr[7:7+type_length]
+    subpacket_len = int(subpacket_len_bits,2)
+
+    payload = binstr[7+type_length:]
+    numbits = 0
+    numpackets = 0
+    processed = 0
+    data = []
+
+
+    while processed < subpacket_len:
+        packet, payload = read_packet(payload)
+        data.append(packet)
+
+        numbits += len(packet.binstr)
+        numpackets += 1
+
+        processed = numbits if mode == 'numbits' else numpackets
+        if processed > subpacket_len:
+            print('Warning! processed > subpacket_len')
+
+    packet_len = 7+type_length+numbits
+    p = Packet(packet_version, packet_type, data, binstr[:packet_len])
+
+    return p, payload
+
 
 def sum_of_version_numbers(packet: Packet):
     if isinstance(packet.value, int):
         return packet.version
-
     else:
         return packet.version + sum(sum_of_version_numbers(p) for p in packet.value)
+
+
+def resolve_packet(packet: Packet) -> int:
+    # If this is a literal, return its value
+    if packet.type == PTYPE_LITERAL or isinstance(packet.value, int):
+        return packet.value
+    
+    # If there are subpackets, resolve them first
+    elif isinstance(packet.value, list):
+        subpackets = packet.value
+        sub_vals = [resolve_packet(p) for p in subpackets]
+
+        if len(sub_vals) == 1: 
+            return sub_vals[0]
+
+        funcs = {
+            PTYPE_SUM: sum,
+            PTYPE_MUL: prod,
+            PTYPE_MIN: min,
+            PTYPE_MAX: max,
+        }
+
+        if packet.type in funcs:
+            return funcs[packet.type](sub_vals)
+
+        sub1, sub2 = sub_vals
+        if packet.type == PTYPE_LT:
+            return int(sub1 < sub2)
+        
+        if packet.type == PTYPE_GT:
+            return int(sub1 > sub2)
+
+        if packet.type == PTYPE_EQ:
+            return int(sub1 == sub2)
+    
+    return ValueError("Sanity check: Should never reach this...")
     
 
 def part_one(hex_str=False):
@@ -120,9 +155,12 @@ def part_one(hex_str=False):
     return sum_of_version_numbers(packet)
 
 
-
 def part_two():
-    pass
+    hex_str = read_input()
+    binstr = hexstr2binstr(hex_str)
+    packet, _ = read_packet(binstr)
+
+    return resolve_packet(packet)
 
 
 if __name__ == '__main__':
@@ -158,5 +196,5 @@ if __name__ == '__main__':
 
     
     print(f'Part one: {part_one()}')
-    # print(f'Part two: {part_two()}')
+    print(f'Part two: {part_two()}')
 
