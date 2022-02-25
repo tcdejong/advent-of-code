@@ -1,10 +1,6 @@
 from collections import namedtuple
 from math import ceil, prod
 
-from rich.traceback import install
-install(show_locals=True)
-
-
 PTYPE_SUM = 0
 PTYPE_MUL = 1
 PTYPE_MIN = 2
@@ -45,11 +41,9 @@ def read_packet(binstr: str):
 
 
 def read_literal(binstr, packet_version, packet_type):
-    # print(f'Reading literal packet {packet_version=} {binstr=}')
     data_bits = binstr[6:]
     block_width = 5
     num_blocks = ceil(len(data_bits) / block_width)
-    # print(f'Literal packet, {data_bits=}')
     
     data = ""
     for block in range(num_blocks):
@@ -148,9 +142,6 @@ def part_one(hex_str=False):
 
     binstr = hexstr2binstr(hex_str)
     packet, _ = read_packet(binstr)
-
-    # print('Part one packet:')
-    # print(packet)
 
     return sum_of_version_numbers(packet)
 

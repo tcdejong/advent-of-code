@@ -37,35 +37,35 @@ def part_one(instructions):
     return sub.h_pos * sub.depth
 
 
+# Yes, this is basically a copy paste. Sue me. 
 def part_two(instructions):
-    @dataclass
-    class Submarine:
-        depth: int = 0
-        h_pos: int = 0
-        aim:   int = 0
+        @dataclass
+        class Submarine:
+            depth: int = 0
+            h_pos: int = 0
+            aim:   int = 0
 
-        def perform_instruction(self, instruction: tuple[str, int]):
-            op, dist = instruction
+            def perform_instruction(self, instruction: tuple[str, int]):
+                op, dist = instruction
 
-            if op == 'forward':
-                self.h_pos += dist
-                self.depth += self.aim * dist
+                if op == 'forward':
+                    self.h_pos += dist
 
-            elif op == 'up':
-                self.aim -= dist
+                elif op == 'up':
+                    self.aim -= dist
 
-            elif op == 'down':
-                self.aim += dist
-            
-            else:
-                raise NotImplementedError
+                elif op == 'down':
+                    self.aim += dist
+                
+                else:
+                    raise NotImplementedError
 
-    sub = Submarine()
+        sub = Submarine()
 
-    for inst in instructions:
-        sub.perform_instruction(inst)
+        for inst in instructions:
+            sub.perform_instruction(inst)
 
-    return sub.h_pos * sub.depth
+        return sub.h_pos * sub.depth
 
 
 if __name__ == "__main__":

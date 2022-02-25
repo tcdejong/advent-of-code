@@ -32,6 +32,7 @@ def tick_fish(fish):
 def part_one():
     return simulate_fish(80)
 
+
 def part_two():
     return simulate_fish(256)
 

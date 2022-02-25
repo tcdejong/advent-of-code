@@ -1,16 +1,4 @@
-""" 
-Day 1 of Advent of Code's 2021 edition. 
-
-Status:
-    Part 1:  Done
-    Part 2: 
-
-"""
-
-from typing import Iterable
-
-
-def read_input() -> Iterable:
+def read_input():
     with open("day1.txt") as f:
         return [int(line) for line in f.readlines()]
 
@@ -30,15 +18,3 @@ if __name__ == '__main__':
     depths = read_input()
     print(f'Part one: {part_one(depths)}')
     print(f'Part two: {part_two(depths)}')
-
-
-# 0     199  A      
-# 1     200  A B    
-# 2     208  A B C  
-# 3     210    B C D
-# 4     200  E   C D
-# 5     207  E F   D
-# 6     240  E F G  
-# 7     269    F G H
-# 8     260      G H
-# 9     263        H
