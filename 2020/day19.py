@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 def read_input(fp='day19.txt') -> tuple(dict, list):
     """
     Read and format puzzle input
