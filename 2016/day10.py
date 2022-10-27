@@ -1,29 +1,37 @@
 from collections import namedtuple
 from dataclasses import dataclass
 
-BotOutputs = namedtuple("BotOutputs", "bot low high output")
-StartValue = namedtuple("StartValue", "val bot output")
+MicroChip = namedtuple("MicroChip", "val target output") 
+# val=value, target=id of bot/output, output distinguishes bot/outputs
 
 def read_input(filename: str = 'day10.txt'):
     with open(filename) as f:
         data = [line.strip() for line in f.readlines()]
 
-    bots = [line.split() for line in data if line.startswith('bot')]
-    bots = [BotOutputs(int(splitline[1]), int(splitline[6]), int(splitline[-1])) for splitline in bots]
-    bots_sorted = [None for _ in bots]
-    for bot in bots:
-        bots_sorted[bot.bot] = Bot(bot.low, bot.high, set())
+    bot_instructions = [line.split() for line in data if line.startswith('bot')]
+    bots_sorted = [None for _ in bot_instructions]
 
-    values = [line.split() for line in data if line.startswith('value')]
-    values = [StartValue(int(splitline[1]), int(splitline[-1])) for splitline in values]
+    for instr in bot_instructions:
+        botnum = int(instr[1])
+        low_target = instr[5]
+        low_id = int(instr[6])
+        high_target = instr[-2]
+        high_id = int(instr[-1])
 
-    return bots_sorted, values
+        bots_sorted[botnum] = Bot(low_target, low_id, high_target, high_id, set())
+
+    microchips = [line.split() for line in data if line.startswith('value')]
+    microchips = [MicroChip(int(splitline[1]), int(splitline[-1]), 'bot') for splitline in microchips]
+
+    return bots_sorted, microchips
 
 
 @dataclass
 class Bot:
-    out_low: int
-    out_high: int
+    low_out_or_bot: str
+    low_target: int
+    high_out_or_bot: str
+    high_target: int
     held_vals: set
 
     def receive(self, val):
@@ -33,27 +41,49 @@ class Bot:
     def give(self):
         low, high = min(self.held_vals), max(self.held_vals)
         self.held_vals = set()
-        return StartValue(low, self.out_low), StartValue(high, self.out_high)
+        return MicroChip(low, self.low_target, self.low_out_or_bot), MicroChip(high, self.high_target, self.high_out_or_bot)
 
 
 
-def part_one(bots: list[Bot], values: list[StartValue]):
+def part_one(bots: list[Bot], values: list[MicroChip]):
     while values:
         val, values = values[0], values[1:]
-        bot = bots[val.bot]
+        if val.output != 'bot':
+            continue
+        
+        bot = bots[val.target]
         bot.receive(val.val)
 
         if len(bot.held_vals) == 2:
             if 61 in bot.held_vals and 17 in bot.held_vals:
-                return val.bot
+                return val.target
             values.extend(bot.give())
 
 
-def part_two(puzzle_input):
-    pass
+def part_two(bots: list[Bot], values: list[MicroChip]):
+    outputs = {}
+
+    while values:
+        val, values = values[0], values[1:]
+
+        if val.output == 'output':
+            assert val.target not in outputs
+            outputs[val.target] = val.val
+            continue
+        
+        bot = bots[val.target]
+        bot.receive(val.val)
+
+        if len(bot.held_vals) == 2:
+            values.extend(bot.give())
+
+        if 0 in outputs and 1 in outputs and 2 in outputs:
+            break
+
+    return outputs[0] * outputs[1] * outputs[2]
 
 
 if __name__ == '__main__':
-    bots, values = read_input()
-    print(f'Part one: {part_one(bots, values)}')
-    # print(f'Part two: {part_two(puzzle_input)}')
+    bots, microchips = read_input()
+    print(f'Part one: {part_one(bots, microchips)}')
+    print(f'Part two: {part_two(bots, microchips)}')
