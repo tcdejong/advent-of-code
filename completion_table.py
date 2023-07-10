@@ -5,6 +5,7 @@ MARK_UNCOMPLETED = " "
 MARK_COMPLETED_P1 = "*"
 MARK_COMPLETED_P2 = "**"
 
+
 def print_table(data: dict):
     table_header = " | ".join(["Year ", *[str(d) if d > 9 else f" {d}" for d in AOC_DAYS]])
     print(table_header)
@@ -14,7 +15,7 @@ def print_table(data: dict):
         print(" | ".join([year, *val]))
 
 
-if __name__ == '__main__':
+def generate_completion_dict():
     completion_data = {year: [MARK_UNCOMPLETED for _ in AOC_DAYS] for year in AOC_YEARS}
 
     # year: list[completed days]
@@ -42,5 +43,8 @@ if __name__ == '__main__':
         for i in v:
             completion_data[str(k)][i] = MARK_COMPLETED_P2
 
+    return completion_data
 
+if __name__ == '__main__':
+    completion_data = generate_completion_dict()
     print_table(completion_data)
