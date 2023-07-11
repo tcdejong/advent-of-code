@@ -31,7 +31,18 @@ def part_one(puzzle_input):
 
 
 def part_two(puzzle_input):
-    pass
+    sum_of_priorities = 0
+    while len(puzzle_input) > 0:
+        a, b, c = puzzle_input[:3]
+        puzzle_input = puzzle_input[3:]
+
+        item = set(list(a)) & set(list(b)) & set(list(c))
+        assert len(item) == 1
+
+        sum_of_priorities += get_item_priority(item.pop())
+    
+    return sum_of_priorities
+        
 
 
 if __name__ == '__main__':
@@ -40,4 +51,6 @@ if __name__ == '__main__':
 
     puzzle_input = read_input()
     print(f'Part one: {part_one(puzzle_input)}')
-    # print(f'Part two: {part_two(puzzle_input)}')
+
+    assert part_two(ex1) == 70
+    print(f'Part two: {part_two(puzzle_input)}')
