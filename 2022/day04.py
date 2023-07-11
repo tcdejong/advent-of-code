@@ -17,11 +17,12 @@ def parse_segments(raw_line):
 
 def fully_contains(segments):
     assert len(segments) == 2
-    seg1, seg2 = segments
-    seg1 = set(list(range(seg1.l, seg1.r+1)))
-    seg2 = set(list(range(seg2.l, seg2.r+1)))
+    return any(seg1.l <= seg2.l and seg1.r >= seg2.r for (seg1, seg2) in [segments, segments[::-1]]) 
 
-    return len(seg1 | seg2) == max(len(seg1), len(seg2))
+
+def overlap(segments):
+    seg1, seg2 = segments
+    return seg1.l <= seg2.l <= seg1.r or seg2.l <= seg1.l <= seg2.r
 
 
 def part_one(puzzle_input):
@@ -29,13 +30,10 @@ def part_one(puzzle_input):
 
 
 def part_two(puzzle_input):
-    pass
+    return sum(overlap(segments) for segments in puzzle_input)
 
 
 if __name__ == '__main__':
-
-    ex1 = read_input('day04ex1.txt')
-
     segs = parse_segments("2-8,3-7")
     assert fully_contains(segs)
     
@@ -44,4 +42,4 @@ if __name__ == '__main__':
 
     puzzle_input = read_input()
     print(f'Part one: {part_one(puzzle_input)}')
-    # print(f'Part two: {part_two(puzzle_input)}')
+    print(f'Part two: {part_two(puzzle_input)}')
