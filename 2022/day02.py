@@ -4,10 +4,32 @@ SHAPE_SCORES = {
     'Z': 3,
 }
 
-WINNING_MOVES = {
+WIN_MOVES = {
     'A': 'Y',
     'B': 'Z',
     'C': 'X',
+}
+
+DRAW_MOVES = {
+    'A': 'X',
+    'B': 'Y',
+    'C': 'Z',
+}
+
+LOSE_MOVES = {
+    'A': 'Z',
+    'B': 'X',
+    'C': 'Y',
+}
+
+RESULT_LOSS = 'X'
+RESULT_DRAW = 'Y'
+RESULT_WIN = 'Z'
+
+REQUIRED_MOVE = {
+    RESULT_WIN: WIN_MOVES,
+    RESULT_DRAW: DRAW_MOVES,
+    RESULT_LOSS: LOSE_MOVES,
 }
 
 def read_input(filename: str = '2022/day02.txt'):
@@ -19,7 +41,7 @@ def read_input(filename: str = '2022/day02.txt'):
 def round_score(their_move, my_move):
     score = SHAPE_SCORES[my_move]
 
-    if WINNING_MOVES[their_move] == my_move:
+    if WIN_MOVES[their_move] == my_move:
         score += 6
     elif f'{their_move}{my_move}' in {'AX', 'BY', 'CZ'}:
         score += 3
@@ -32,7 +54,14 @@ def part_one(puzzle_input):
 
 
 def part_two(puzzle_input):
-    pass
+    score = 0
+
+    for their_move, required_result in puzzle_input:
+        my_move = REQUIRED_MOVE[required_result][their_move]
+        score_delta = round_score(their_move, my_move)
+        score += score_delta
+
+    return score
 
 
 if __name__ == '__main__':
@@ -41,4 +70,6 @@ if __name__ == '__main__':
     assert part_one(ex1) == 15
 
     print(f'Part one: {part_one(puzzle_input)}')
-    # print(f'Part two: {part_two(puzzle_input)}')
+
+    assert part_two(ex1) == 12
+    print(f'Part two: {part_two(puzzle_input)}')
