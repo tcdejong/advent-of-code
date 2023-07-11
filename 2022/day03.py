@@ -42,7 +42,6 @@ def part_two(puzzle_input):
         sum_of_priorities += get_item_priority(item.pop())
     
     return sum_of_priorities
-        
 
 
 if __name__ == '__main__':
