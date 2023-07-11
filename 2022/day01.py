@@ -1,4 +1,4 @@
-def read_input(filename: str = '2022/day01.txt'):
+def read_input(filename: str = 'day01.txt'):
     with open(filename) as f:
         lines = f.read().splitlines()
     
