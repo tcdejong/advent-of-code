@@ -93,7 +93,7 @@ class FileSystem:
     def find_folders_of_max_total_size(self, max_size=100_000):
         self.get_dir_size([ROOT])
 
-        open_paths = {tuple(ROOT)}
+        open_paths = {(ROOT,)}
         examined_paths = set()
         valid_paths = set()
 
@@ -142,7 +142,22 @@ def part_one(puzzle_input):
 
 
 def part_two(puzzle_input):
-    pass
+    fs = FileSystem(puzzle_input)
+    fs.get_dir_size([ROOT])
+    
+    total_disk_space = 70_000_000
+    total_required_space = 30_000_000
+    root_size = fs.folders[(ROOT,)].totalsize
+    extra_required_space = abs(total_disk_space - total_required_space - root_size)
+
+    smallest_suitable_directory_size = root_size
+
+    for path, folder in fs.folders.items():
+        if extra_required_space <= folder.totalsize <= smallest_suitable_directory_size:
+            smallest_suitable_directory_size = folder.totalsize
+            print('new smallest folder:', path)
+
+    return smallest_suitable_directory_size
 
 
 if __name__ == '__main__':
@@ -151,4 +166,4 @@ if __name__ == '__main__':
 
 
     print(f'Part one: {part_one(puzzle_input)}')
-    # print(f'Part two: {part_two(puzzle_input)}')
+    print(f'Part two: {part_two(puzzle_input)}')
