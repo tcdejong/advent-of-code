@@ -5,8 +5,6 @@ def read_input(filename: str = 'day05.txt'):
     with open(filename) as f:
         data = [line for line in f.read().splitlines()]
 
-    # find line spacer between stack and move instructions
-
     for i, line in enumerate(data):
         if line == "":
             bottom_stack_row = i-1
@@ -17,7 +15,7 @@ def read_input(filename: str = 'day05.txt'):
     row_contents = [[row[c] for c in row_content_indices] for row in reversed(data[0:bottom_stack_row])]
 
     # transpose from rows to stacks
-    stacks = list(map(list, zip(*row_contents)))
+    stacks = list(zip(*row_contents))
     stacks = [[crate for crate in stack if crate != " "] for stack in stacks]
     
     moves = [parse_move(move) for move in data[bottom_stack_row+2:]]
@@ -46,29 +44,10 @@ def part_one(puzzle_input):
 def part_two(puzzle_input):
     stacks, moves = puzzle_input
 
-    i=0
-
     for move in moves:
-
-        if i < 3:
-            for n, stack in enumerate(stacks):
-                print(n, stack)
-            print()
-
-
         crates = stacks[move.orig][-move.times:]
         stacks[move.orig] = stacks[move.orig][:-move.times]
         stacks[move.dest] = [*stacks[move.dest], *crates]
-
-        if i < 3:
-            i+=1
-            print(move)
-            print(crates)
-            print()
-
-            for n, stack in enumerate(stacks):
-                print(n, stack)
-            print()
 
     return "".join([stack[-1] for stack in stacks])
 
