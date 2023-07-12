@@ -68,7 +68,7 @@ def part_two(trees):
     x_max = len(trees[0])
     y_max = len(trees)
 
-    # slide over trees linearly, once per direction
+    # slide a pointer over 1 row or column of trees
     # keep 10 counters for visibility opposite to the direction of travel, 1 counter for each possible height
         # when observing tree (x,y) with height h, determine its visibility the counter for h
         # reset the height of all counters h and smaller (because on the next step, the tree blocks them but a bigger tree can look over them again)
