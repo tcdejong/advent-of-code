@@ -138,7 +138,6 @@ def part_two(trees):
     return max(scores.values())
 
 
-
 if __name__ == '__main__':
     puzzle_input = read_input()
     # print(f'Part one: {part_one(puzzle_input)}')
