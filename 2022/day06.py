@@ -5,16 +5,16 @@ def read_input(filename: str = 'day06.txt'):
     return data
 
 
-def part_one(puzzle_input):
+def part_one(puzzle_input, packet_length = 4):
     for i, _ in enumerate(puzzle_input):
-        if len(set(puzzle_input[i:i+4])) == 4:
+        if len(set(puzzle_input[i:i+packet_length])) == packet_length:
             break
     
-    return i+4
+    return i+packet_length
         
-        
+
 def part_two(puzzle_input):
-    pass
+    return part_one(puzzle_input, packet_length=14)
 
 
 if __name__ == '__main__':
@@ -26,4 +26,4 @@ if __name__ == '__main__':
 
     puzzle_input = read_input()
     print(f'Part one: {part_one(puzzle_input)}')
-    # print(f'Part two: {part_two(puzzle_input)}')
+    print(f'Part two: {part_two(puzzle_input)}')
