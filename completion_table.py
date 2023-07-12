@@ -33,7 +33,7 @@ def generate_completion_dict():
         2019: list(range(0, 13)),
         2020: list(range(0, 18)),
         2021: list(range(0, 16)),
-        2022: list(range(0, 2))
+        2022: list(range(0, 7))
     }
 
     for k, v in completed_p1.items():
