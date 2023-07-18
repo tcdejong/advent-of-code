@@ -1,7 +1,7 @@
 import re
 import logging
 logging.basicConfig()
-logging.root.setLevel(logging.WARN)
+logging.root.setLevel(logging.INFO)
 logger = logging.getLogger("day11")
 
 PATTERN = r"Monkey (?P<num>\d+):\n.+items:.(?P<items>.+)\n.+: (?P<operation>.+)\n.+Test: (?P<test>.+)\n.+(?P<iftrue>\d)\n.+(?P<iffalse>\d)"
@@ -31,8 +31,11 @@ class Monkey:
         self.iftrue = int(regex_matches[4])
         self.iffalse = int(regex_matches[5])
 
+        self.divisor = int(self.test[13:])
         self.num_inspections = 0
         self.monkeys.append(self)
+        self.relaxation_factor = 3
+        self.part = 1
 
     
     def take_turn(self):
@@ -72,8 +75,9 @@ class Monkey:
         else:
             raise NotImplementedError()
         
-        new_worrylevel = new_worrylevel // 3
-        logger.log(10,f'\t\tWorry level is divided by three and rounded down to {new_worrylevel}')
+        if self.part == 1:
+            new_worrylevel = new_worrylevel // self.relaxation_factor
+            logger.log(10,f'\t\tWorry level is divided by {self.relaxation_factor} and rounded down to {new_worrylevel}')
 
         return new_worrylevel
 
@@ -81,9 +85,13 @@ class Monkey:
     def run_test(self, worrylevel: int):
         """Test shows how the monkey uses your worry level to decide where to throw an item next. """
         assert self.test.startswith('divisible by ')
-        divisor = int(self.test[13:])
-        recipient = self.iftrue if worrylevel % divisor == 0 else self.iffalse
+        
+        recipient = self.iftrue if worrylevel % self.divisor == 0 else self.iffalse
         return recipient
+    
+
+    def reduce_worrylevels(self, modulo):
+        self.items = [wl % modulo for wl in self.items]
         
 
     def __repr__(self) -> str:
@@ -102,17 +110,33 @@ def part_one(monkeys: list[Monkey]):
         for m in monkeys:
             logger.info(f'{m}: {m.items}')
 
-
     monkeys_by_activity = sorted(monkeys, key=lambda m: m.num_inspections, reverse=True)
     return monkeys_by_activity[0].num_inspections * monkeys_by_activity[1].num_inspections
 
 
-def part_two(puzzle_input):
-    pass
+def part_two(monkeys: list[Monkey]):
+    divisors = [m.divisor for m in monkeys]
+    from math import lcm
+    monkey_lcm = lcm(*divisors)
+
+    for m in monkeys:
+        m.part = 2
+    
+    for i in range(10_000):
+        perform_round(monkeys)
+        for m in monkeys:
+            m.reduce_worrylevels(monkey_lcm)
+            
+        logger.info(f'After round {i+1}, monkeys are holding these worry levels:')
+        for m in monkeys:
+            logger.debug(f'{m}: {m.items}')
+
+    monkeys_by_activity = sorted(monkeys, key=lambda m: m.num_inspections, reverse=True)
+    return monkeys_by_activity[0].num_inspections * monkeys_by_activity[1].num_inspections    
 
 
 if __name__ == '__main__':
     ex1 = read_input('day11ex1.txt')
     puzzle_input = read_input()
-    print(f'Part one: {part_one(puzzle_input)}')
-    # print(f'Part two: {part_two(puzzle_input)}')
+    # print(f'Part one: {part_one(puzzle_input)}')
+    print(f'Part two: {part_two(puzzle_input)}')
