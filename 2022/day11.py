@@ -126,8 +126,8 @@ def part_two(monkeys: list[Monkey]):
         perform_round(monkeys)
         for m in monkeys:
             m.reduce_worrylevels(monkey_lcm)
-            
-        logger.info(f'After round {i+1}, monkeys are holding these worry levels:')
+
+        logger.info(f'Round {i+1} finished')
         for m in monkeys:
             logger.debug(f'{m}: {m.items}')
 
