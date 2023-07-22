@@ -14,32 +14,39 @@ class CRT:
     instructions: list[str]
     X: int = 1
     summed_sig_strength: int = 0
-    part = 1
-    display = [False for _ in range(240)]    
+    display = [False for _ in range(240)]
 
     def run(self):
-        cycle = 1
+        cycle = 0
+        hold = 0
+        V = 0
 
-        for inst in self.instructions:
+        while self.instructions:
+            cycle += 1
             self.read_signal_strength(cycle)
-            if inst.startswith("noop"):
-                self.read_signal_strength(cycle)
-                cycle += 1
-            elif inst.startswith("addx"):
-                for c in [cycle, cycle + 1]:
-                    self.read_signal_strength(c)
-                    
-                V = int(inst.split()[1])
+
+            if hold == 1:
                 self.X += V
-                cycle += 2
+            if hold > 0:
+                hold -= 1
+                continue
+
+            inst = self.instructions.pop(0)
+            if inst.startswith('addx'):
+                V = int(inst.split()[-1])
+                hold = 1
+
+        print(f'{cycle=} \t {self.X=} \t {self.summed_sig_strength=}')
+
                 
 
     def read_signal_strength(self, cycle):
-        if self.part == 1 and self.should_read_signal_strength(cycle):
+        if self.should_read_signal_strength(cycle):
             self.summed_sig_strength += cycle * self.X
             print(f'{cycle=} \t {self.X=} \t {self.summed_sig_strength=}')
-            return
-        
+    
+
+    def update_display(self, cycle):
         if cycle % 40 in {self.X-1, self.X, self.X + 1}:
             self.display[cycle] = True
 
@@ -65,13 +72,12 @@ def part_one(puzzle_input):
 
 def part_two(puzzle_input):
     crt = CRT(puzzle_input)
-    crt.part = 2
     crt.run()
     crt.print_display()
 
 
 if __name__ == '__main__':
     puzzle_input = read_input()
-    puzzle_input = read_input('day10ex1.txt')
-    # print(f'Part one: {part_one(puzzle_input)}')
-    print(f'Part two: {part_two(puzzle_input)}')
+    # puzzle_input = read_input('day10ex1.txt')
+    print(f'Part one: {part_one(puzzle_input)}')
+    # print(f'Part two: {part_two(puzzle_input)}')
