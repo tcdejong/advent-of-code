@@ -6,7 +6,7 @@ def read_input(filename: str = 'day10.txt'):
 
     return data
 
-PIXEL_DARK = "."
+PIXEL_DARK = " "
 PIXEL_LIGHT = "#"
 
 @dataclass
@@ -24,6 +24,7 @@ class CRT:
         while self.instructions:
             cycle += 1
             self.read_signal_strength(cycle)
+            self.draw_pixel(cycle)
 
             if hold == 1:
                 self.X += V
@@ -43,10 +44,11 @@ class CRT:
     def read_signal_strength(self, cycle):
         if self.should_read_signal_strength(cycle):
             self.summed_sig_strength += cycle * self.X
-            print(f'{cycle=} \t {self.X=} \t {self.summed_sig_strength=}')
+            # print(f'{cycle=} \t {self.X=} \t {self.summed_sig_strength=}')
     
 
-    def update_display(self, cycle):
+    def draw_pixel(self, cycle):
+        cycle = cycle-1
         if cycle % 40 in {self.X-1, self.X, self.X + 1}:
             self.display[cycle] = True
 
@@ -79,5 +81,5 @@ def part_two(puzzle_input):
 if __name__ == '__main__':
     puzzle_input = read_input()
     # puzzle_input = read_input('day10ex1.txt')
-    print(f'Part one: {part_one(puzzle_input)}')
-    # print(f'Part two: {part_two(puzzle_input)}')
+    # print(f'Part one: {part_one(puzzle_input)}')
+    print(f'Part two: {part_two(puzzle_input)}')
