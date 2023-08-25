@@ -59,11 +59,15 @@ def remove_txt_files():
 
 
 async def download_missing_inputs():
-    ses_token = ""
+    session_token = read_session_token()
+
+    if not session_token:
+        raise ValueError('Failed to read session token!')
+
     day_folders = get_all_day_folders()
 
 
-    async with aiohttp.ClientSession(cookies={'session': ses_token}) as session:
+    async with aiohttp.ClientSession(cookies={'session': session_token}) as session:
         for day_folder in list(day_folders):
             input_file = day_folder / 'input.txt'
             if input_file.exists():
@@ -78,6 +82,11 @@ async def download_missing_inputs():
                     f.write(data)
 
                 print(f'wrote {f}!')
+
+
+def read_session_token():
+    with open('.session_token') as f:
+        return f.read().strip()
 
 
 def get_input_url_from_day_folder_path(day_folder: Path):
