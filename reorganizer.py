@@ -6,7 +6,6 @@ import datetime as dt
 from pathlib import Path
 import aiohttp
 import aiofiles
-import asyncio
 from typing import Generator
 
 def get_event_years():
@@ -58,6 +57,8 @@ def remove_txt_files():
             print(f.absolute())
 
 
+# When using iPython there already is an event loop, so just await.
+# Otherwise, import asyncio and use asyncio.run()
 async def download_missing_inputs():
     session_token = read_session_token()
 
@@ -78,15 +79,30 @@ async def download_missing_inputs():
                 data = await resp.read()
                 data = data.decode()
                 
-                with open(input_file, 'w+') as f:
-                    f.write(data)
+                async with aiofiles.open(input_file, 'w+') as f:
+                    await f.write(data)
 
                 print(f'wrote {f}!')
 
 
 def read_session_token():
+    token_path = Path('.session_token')
+
+    if not token_path.exists():
+        return ask_session_token()
+
     with open('.session_token') as f:
         return f.read().strip()
+    
+
+def ask_session_token():
+    token = input('Please provide session token:')
+    token_path = Path('.session_token')
+
+    with open(token_path, 'w+') as f:
+        f.write(token)
+
+    return token
 
 
 def get_input_url_from_day_folder_path(day_folder: Path):
