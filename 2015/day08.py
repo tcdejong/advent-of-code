@@ -1,4 +1,4 @@
-def read_input(file_name="day8.txt"):
+def read_input(file_name="day08.txt"):
     with open(file_name) as file:
         return [line.strip() for line in file.readlines()]
 
