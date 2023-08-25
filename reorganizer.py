@@ -4,7 +4,10 @@ Miscellaneous shortlived helper functions to reorganize the files and folders in
 
 import datetime as dt
 from pathlib import Path
-from typing import Iterable
+import aiohttp
+import aiofiles
+import asyncio
+from typing import Generator
 
 def get_event_years():
     FIRST_YEAR = 2015
@@ -19,7 +22,7 @@ def get_event_year_folder_paths():
     return (Path(str(year)) for year in get_event_years())
 
 
-def get_all_day_folders():
+def get_all_day_folders() -> Generator[Path, None, None]:
     for year in get_event_year_folder_paths():
         year_folder = Path(str(year))
 
@@ -55,5 +58,34 @@ def remove_txt_files():
             print(f.absolute())
 
 
-def download_inputs():
-    ...
+async def download_missing_inputs():
+    ses_token = "53616c7465645f5f08ca7bb91cae75e3f38bc20eb4b35422c204247cbe83a20ca7893e447bd8a7a71dbd88074751f96383a5d2651f1a1e68d29772472def8db1"
+    day_folders = get_all_day_folders()
+
+
+    async with aiohttp.ClientSession(cookies={'session': ses_token}) as session:
+        for day_folder in list(day_folders):
+            input_file = day_folder / 'input.txt'
+            if input_file.exists():
+                continue
+
+            url = get_input_url_from_day_folder_path(day_folder)
+            async with session.get(url) as resp:
+                data = await resp.read()
+                data = data.decode()
+                
+                with open(input_file, 'w+') as f:
+                    f.write(data)
+
+                print(f'wrote {f}!')
+
+
+def get_input_url_from_day_folder_path(day_folder: Path):
+    day = int(day_folder.stem[3:])
+    year = int(day_folder.parent.name)
+
+    if dt.date(year,12,day) > dt.datetime.now().date():
+        return
+
+    return f'https://adventofcode.com/{year}/day/{day}/input'
+
