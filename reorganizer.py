@@ -1,5 +1,5 @@
 """
-Add leading zeros to files in the solution folders 2015, 2016, ...
+Miscellaneous shortlived helper functions to reorganize the files and folders in this directory.
 """
 
 import datetime as dt
@@ -15,8 +15,21 @@ def get_event_years():
     return range(FIRST_YEAR, LAST_YEAR + 1)
 
 
-def create_folders(years: Iterable[int]):
-    for year in years:
+def get_event_year_folder_paths():
+    return (Path(str(year)) for year in get_event_years())
+
+
+def get_all_day_folders():
+    for year in get_event_year_folder_paths():
+        year_folder = Path(str(year))
+
+        for f in year_folder.iterdir():
+            if f.is_dir and f.name.startswith('day'):
+                yield f
+
+
+def create_year_and_day_folders():
+    for year in get_event_year_folder_paths():
         year_folder = Path(str(year))
         if not year_folder.exists():
             year_folder.mkdir()
@@ -29,31 +42,18 @@ def create_folders(years: Iterable[int]):
                 day_folder.mkdir()
                 
 
-def move_solutions_from_year_folders_to_day_folders():
-    years = (str(y) for y in get_event_years())
+def remove_txt_files():
+    year_folders = get_event_year_folder_paths()
+    
+    for yf in year_folders:
+        if not yf.exists():
+            continue
 
-    for year in years:
-        p = Path(str(year))
-
-        py_files = p.glob("*.py")
-        for file in py_files:
-
+        txt_files = yf.glob("*.txt")
+        for f in txt_files:
+            f.unlink()
+            print(f.absolute())
 
 
-# def renamer():
-#     for folder in folders:
-#         for file in folder.iterdir():
-            
-#             if not file.name.startswith("day"):
-#                 continue
-
-#             if file.suffix != ".py":
-#                 continue
-
-#             if len(file.name) >= len("day##.py"):
-#                 continue
-
-#             day_number = file.name[3]
-#             new_filepath = file.parent / f'day0{day_number}.py'
-            
-#             file.rename(new_filepath)
+def download_inputs():
+    ...
