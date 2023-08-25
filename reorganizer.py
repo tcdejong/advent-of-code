@@ -59,7 +59,7 @@ def remove_txt_files():
 
 
 async def download_missing_inputs():
-    ses_token = "53616c7465645f5f08ca7bb91cae75e3f38bc20eb4b35422c204247cbe83a20ca7893e447bd8a7a71dbd88074751f96383a5d2651f1a1e68d29772472def8db1"
+    ses_token = ""
     day_folders = get_all_day_folders()
 
 
