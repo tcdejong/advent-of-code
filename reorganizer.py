@@ -4,9 +4,9 @@ Miscellaneous shortlived helper functions to reorganize the files and folders in
 
 import datetime as dt
 from pathlib import Path
+import asyncio
 import aiohttp
 import aiofiles
-from typing import Generator
 
 def get_event_years():
     FIRST_YEAR = 2015
@@ -17,13 +17,15 @@ def get_event_years():
     return range(FIRST_YEAR, LAST_YEAR + 1)
 
 
-def get_event_year_folder_paths():
+def get_event_year_folders():
     return (Path(str(year)) for year in get_event_years())
 
 
-def get_all_day_folders() -> Generator[Path, None, None]:
-    for year in get_event_year_folder_paths():
+def get_all_day_folders():
+    for year in get_event_year_folders():
         year_folder = Path(str(year))
+        if not year_folder.exists():
+            continue
 
         for f in year_folder.iterdir():
             if f.is_dir and f.name.startswith('day'):
@@ -31,7 +33,7 @@ def get_all_day_folders() -> Generator[Path, None, None]:
 
 
 def create_year_and_day_folders():
-    for year in get_event_year_folder_paths():
+    for year in get_event_year_folders():
         year_folder = Path(str(year))
         if not year_folder.exists():
             year_folder.mkdir()
@@ -45,7 +47,7 @@ def create_year_and_day_folders():
                 
 
 def remove_txt_files():
-    year_folders = get_event_year_folder_paths()
+    year_folders = get_event_year_folders()
     
     for yf in year_folders:
         if not yf.exists():
@@ -60,29 +62,32 @@ def remove_txt_files():
 # When using iPython there already is an event loop, so just await.
 # Otherwise, import asyncio and use asyncio.run()
 async def download_missing_inputs():
+    tasks = [download_and_write_day_input(folder) for folder in get_all_day_folders()]
+
+    for task in asyncio.as_completed(tasks):
+        await task
+
+
+async def download_and_write_day_input(day_folder: Path):
     session_token = read_session_token()
 
     if not session_token:
         raise ValueError('Failed to read session token!')
 
-    day_folders = get_all_day_folders()
-
-
     async with aiohttp.ClientSession(cookies={'session': session_token}) as session:
-        for day_folder in list(day_folders):
-            input_file = day_folder / 'input.txt'
-            if input_file.exists():
-                continue
+        input_file = day_folder / 'input.txt'
+        if input_file.exists():
+            return
 
-            url = get_input_url_from_day_folder_path(day_folder)
-            async with session.get(url) as resp:
-                data = await resp.read()
-                data = data.decode()
-                
-                async with aiofiles.open(input_file, 'w+') as f:
-                    await f.write(data)
+        url = get_input_url_from_day_folder_path(day_folder)
+        async with session.get(url) as resp:
+            data = await resp.read()
+            data = data.decode()
+            
+            async with aiofiles.open(input_file, 'w+') as f:
+                await f.write(data)
 
-                print(f'wrote {f}!')
+            print(f'Downloaded {day_folder.name}!')
 
 
 def read_session_token():
@@ -113,4 +118,19 @@ def get_input_url_from_day_folder_path(day_folder: Path):
         return
 
     return f'https://adventofcode.com/{year}/day/{day}/input'
+
+
+async def profile_async(func, *args, **kwargs):
+    import cProfile
+    import pstats
+    import datetime as dt
+
+    with cProfile.Profile() as pr:
+        await func(*args, **kwargs)
+
+    stats = pstats.Stats(pr)
+    stats.sort_stats(pstats.SortKey.TIME)
+    
+    timestamp = dt.datetime.now().isoformat().replace(':', '_')
+    stats.dump_stats(filename=f'profile_async_{timestamp}.prof')
 
