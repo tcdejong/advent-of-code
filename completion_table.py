@@ -8,7 +8,10 @@ COMPLETION_MARKS = {
     2: MARK_COMPLETED_P2,
 }
 
-ProgressDict = dict[tuple[int, int], int] # (year, day): num_stars
+AoCYear = int
+AoCDay = int
+NumStars = int
+ProgressDict = dict[tuple[AoCYear, AoCDay], NumStars]
 
 from lib import AOC_DAYS, aoc_session, read_session_token, get_event_years
 import aiohttp
@@ -16,7 +19,7 @@ import asyncio
 import bs4
 
 
-async def request_progress_html(session: aiohttp.ClientSession, year: int):
+async def request_progress_html(session: aiohttp.ClientSession, year: AoCYear):
     url = f'https://adventofcode.com/{year}'
 
     async with session.get(url) as resp:
@@ -26,7 +29,7 @@ async def request_progress_html(session: aiohttp.ClientSession, year: int):
     return html, year # returning year because the async requests might be returned out of order
 
 
-def parse_progress_html(html: str, year: int):
+def parse_progress_html(html: str, year: AoCYear):
     soup = bs4.BeautifulSoup(html, 'html.parser')
     num_stars: ProgressDict = {}
   
