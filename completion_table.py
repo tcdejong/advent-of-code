@@ -64,11 +64,11 @@ def print_table(num_stars: ProgressDict):
         print(" | ".join([str(year), *progress]))
 
 
-async def pipeline_completion_table():
+async def pipeline_completion_table(years=get_event_years()):
     num_stars: ProgressDict = {}
 
     async with aoc_session() as session:
-        download_html_tasks = [request_progress_html(session, year) for year in get_event_years()]
+        download_html_tasks = [request_progress_html(session, year) for year in years]
         
         for task in asyncio.as_completed(download_html_tasks):
             html, year = await task
