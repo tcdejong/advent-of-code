@@ -1,51 +1,79 @@
-AOC_YEARS = [str(y) for y in range(2015, 2023)]
-AOC_DAYS = range(1,26)
-
 MARK_UNCOMPLETED = "  "
 MARK_COMPLETED_P1 = "* "
 MARK_COMPLETED_P2 = "**"
 
+COMPLETION_MARKS = {
+    0: MARK_UNCOMPLETED,
+    1: MARK_COMPLETED_P1,
+    2: MARK_COMPLETED_P2,
+}
 
-def print_table(data: dict):
+ProgressDict = dict[tuple[int, int], int] # (year, day): num_stars
+
+from lib import AOC_DAYS, aoc_session, read_session_token, get_event_years
+import aiohttp
+import asyncio
+import bs4
+
+
+async def request_progress_html(session: aiohttp.ClientSession, year: int):
+    url = f'https://adventofcode.com/{year}'
+
+    async with session.get(url) as resp:
+        data = await resp.read()
+        html = data.decode()
+
+    return html, year # returning year because the async requests might be returned out of order
+
+
+def parse_progress_html(html: str, year: int):
+    soup = bs4.BeautifulSoup(html, 'html.parser')
+    num_stars: ProgressDict = {}
+  
+    for day_a in soup.pre.find_all('a'):
+        day_classes = day_a['class']
+        day_num = int(day_classes[0].lstrip('calendar-day'))
+        
+        day_stars = 0
+        if 'calendar-complete' in day_classes:
+            day_stars = 1
+        elif 'calendar-verycomplete' in day_classes:
+            day_stars = 2
+        
+        num_stars[(year, day_num)] = day_stars
+
+    return num_stars
+
+
+def print_table(num_stars: ProgressDict):
+    """
+    Print input dictionary as a markdown-formatted table and print it.
+    The dictionary must have tuples of (year, day) as keys, and number of stars as values. 
+    """
     table_header = " | ".join(["Year", *[str(d) if d > 9 else f" {d}" for d in AOC_DAYS]])
     print(table_header)
     print(":---:|", ":--:|" * 25, sep="")
 
-    for year,val in data.items():
-        print(" | ".join([year, *val]))
+    years = set(key[0] for key in num_stars.keys())
+
+    for year in sorted(years):
+        progress = [COMPLETION_MARKS[num_stars[(year, day)]] for day in AOC_DAYS]
+        print(" | ".join([str(year), *progress]))
 
 
-def generate_completion_dict():
-    completion_data = {year: [MARK_UNCOMPLETED for _ in AOC_DAYS] for year in AOC_YEARS}
+async def pipeline_completion_table():
+    num_stars: ProgressDict = {}
 
-    # year: list[completed days]
-    # 0 indexed
-    completed_p1 = {
-        2021: [16]
-    }
+    async with aoc_session() as session:
+        download_html_tasks = [request_progress_html(session, year) for year in get_event_years()]
+        
+        for task in asyncio.as_completed(download_html_tasks):
+            html, year = await task
+            year_stars = parse_progress_html(html, year)
+            num_stars |= year_stars
 
-    # year: list[completed days]
-    # 0 indexed
-    completed_p2 = {
-        2015: list(range(0, 8)),
-        2016: list(range(0, 10)),
-        2018: list(range(0, 7)),
-        2019: list(range(0, 13)),
-        2020: list(range(0, 18)),
-        2021: list(range(0, 16)),
-        2022: list(range(0, 11)),
-    }
+    print_table(num_stars)
 
-    for k, v in completed_p1.items():
-        for i in v:
-            completion_data[str(k)][i] = MARK_COMPLETED_P1
-    
-    for k, v in completed_p2.items():
-        for i in v:
-            completion_data[str(k)][i] = MARK_COMPLETED_P2
-
-    return completion_data
 
 if __name__ == '__main__':
-    completion_data = generate_completion_dict()
-    print_table(completion_data)
+    pass
