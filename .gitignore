@@ -8,3 +8,4 @@
 .vscode/aoc-snippets.code-snippets
 .session_token
 __pycache__
+*.html
