@@ -7,14 +7,9 @@ from pathlib import Path
 import asyncio
 import aiohttp
 import aiofiles
+import bs4
 
-def get_event_years():
-    FIRST_YEAR = 2015
-    
-    now = dt.datetime.now()
-    LAST_YEAR = now.year if now.month >= 11 else now.year - 1
-
-    return range(FIRST_YEAR, LAST_YEAR + 1)
+from lib import get_event_years, read_session_token
 
 
 def get_event_year_folders():
@@ -90,26 +85,6 @@ async def download_and_write_day_input(day_folder: Path):
             print(f'Downloaded {day_folder.name}!')
 
 
-def read_session_token():
-    token_path = Path('.session_token')
-
-    if not token_path.exists():
-        return ask_session_token()
-
-    with open('.session_token') as f:
-        return f.read().strip()
-    
-
-def ask_session_token():
-    token = input('Please provide session token:')
-    token_path = Path('.session_token')
-
-    with open(token_path, 'w+') as f:
-        f.write(token)
-
-    return token
-
-
 def get_input_url_from_day_folder_path(day_folder: Path):
     day = int(day_folder.stem[3:])
     year = int(day_folder.parent.name)
@@ -118,19 +93,4 @@ def get_input_url_from_day_folder_path(day_folder: Path):
         return
 
     return f'https://adventofcode.com/{year}/day/{day}/input'
-
-
-async def profile_async(func, *args, **kwargs):
-    import cProfile
-    import pstats
-    import datetime as dt
-
-    with cProfile.Profile() as pr:
-        await func(*args, **kwargs)
-
-    stats = pstats.Stats(pr)
-    stats.sort_stats(pstats.SortKey.TIME)
-    
-    timestamp = dt.datetime.now().isoformat().replace(':', '_')
-    stats.dump_stats(filename=f'profile_async_{timestamp}.prof')
 
