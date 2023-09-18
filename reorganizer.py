@@ -9,7 +9,7 @@ import aiohttp
 import aiofiles
 import bs4
 
-from lib import get_event_years, read_session_token
+from lib import get_event_years, read_session_token, AOC_DAYS
 
 
 def get_event_year_folders():
@@ -34,7 +34,7 @@ def create_year_and_day_folders():
             year_folder.mkdir()
             print(f'Created folder for {year}')
 
-        for day in range(1,26):
+        for day in AOC_DAYS:
             day = str(day).zfill(2)
             day_folder = year_folder / f'day{day}'
             if not day_folder.exists():
