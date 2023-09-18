@@ -13,7 +13,7 @@ AoCDay = int
 NumStars = int
 ProgressDict = dict[tuple[AoCYear, AoCDay], NumStars]
 
-from lib import AOC_DAYS, aoc_session, read_session_token, get_event_years
+from lib import AOC_DAYS, aoc_session, get_event_years
 import aiohttp
 import asyncio
 import bs4
