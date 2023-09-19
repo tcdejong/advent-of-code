@@ -103,13 +103,34 @@ def part_one(puzzle_input):
 
 
 def part_two(puzzle_input):
-    pass
+    map = map_stone_locations(puzzle_input)
+
+    floor_y = max(xy[1] for xy in map.keys()) + 2
+    floor_x0 = SAND_ORIGIN[0] - floor_y - 5
+    floor_x1 = SAND_ORIGIN[0] + floor_y + 5
+
+    floor_l = (floor_x0, floor_y)
+    floor_r = (floor_x1, floor_y)
+
+    for tile in get_coords_between_points(floor_l, floor_r):
+        map[tile] = STONE
+
+
+    sand_produced = 0
+    while produce_sand_unit(map, SAND_ORIGIN):
+        sand_produced += 1
+        if SAND_ORIGIN in map:
+            break
+
+    print_map(map)
+    return sand_produced
+
 
 
 if __name__ == '__main__':
-    # puzzle_input = read_input('ex1.txt')
     puzzle_input = read_input()
+    # puzzle_input = read_input('ex1.txt')
     map = map_stone_locations(puzzle_input)
 
-    print(f'Part one: {part_one(puzzle_input)}')
-    # print(f'Part two: {part_two(puzzle_input)}')
+    # print(f'Part one: {part_one(puzzle_input)}')
+    print(f'Part two: {part_two(puzzle_input)}')
