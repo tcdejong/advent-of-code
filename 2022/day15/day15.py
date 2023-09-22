@@ -41,7 +41,7 @@ def all_coords_within_range(p: Point, maxdist: int) -> set[Point]:
                 )
 
 
-def all_coords_at_exact_dist(p: Point, dist: int) -> tuple(Point):
+def all_coords_at_exact_dist(p: Point, dist: int) -> list[Point]:
     points = [Point(p.x+dx, p.y+(dist-abs(dx))) for dx in range(-dist, dist+1)]
 
 
@@ -87,43 +87,52 @@ def make_subranges(start, stop, n):
     return subranges
 
 
-def scan_area(range_x, range_y, sensor_distances: tuple[tuple[Point, int]]):
+def scan_area_bf(range_x, range_y, sensor_distances: tuple[tuple[Point, int]]):
+    # Brute force, but skip tiles on a row where possible
     # Alternate strategies:
     # - scan outward from sensors starting at the distance to their nearest beacon +1
-    # - hop over tiles if too close to sensor, based on distance difference
-    for x in range_x:
-        for y in range_y:
-            next_tile = False
-            tile = Point(x, y)
 
-            for sensor, maxdist in sensor_distances:
-                if manhattan_dist(sensor, tile) <= maxdist:
-                    next_tile = True
-                    break
-            else:
+    scanned = 0
+    jumped = 0
+
+    py = range_y.start
+    while py < range_y.stop:
+        px = range_x.start
+        while px < range_x.stop:
+            tile = Point(px, py)
+            scanned += 1
+
+            distance_differences_to_beacon_per_sensor = [manhattan_dist(sensor, tile) - beacondist for sensor, beacondist in sensor_distances]
+
+            if all(diff > 0 for diff in distance_differences_to_beacon_per_sensor):
                 return tile
+            
+            jump_distance = abs(min(distance_differences_to_beacon_per_sensor))
+            jumped += jump_distance
+            px += max(jump_distance, 1)
 
-            if next_tile:
-                next_tile = False
-                continue
-                
+            if scanned % 100_000 == 0:
+                print(f'{scanned=} \t {jumped=}')
+        
+        py += 1
+
+
+
+def scan_pulsing_out(sensor, dist, ):
+    pass
+
 
 # The brutest of forces!
-def part_two(sensor_beacon_pairs, xy_limit):
+def part_two_bf(sensor_beacon_pairs: list[SensorBeaconPair], xy_limit):
     from concurrent.futures import ProcessPoolExecutor, as_completed
-    import tqdm 
 
     workers = 6
     scan_ranges_x = make_subranges(0, xy_limit+1, workers)
     sensor_distances = tuple((sensor, manhattan_dist(sensor, beacon)) for sensor, beacon in sensor_beacon_pairs)
     
-    
     with ProcessPoolExecutor(max_workers=workers) as executor:
         task_args = [(range_x, range(0,xy_limit+1), sensor_distances) for range_x in scan_ranges_x]
-        futures = [executor.submit(scan_area, *args) for args in task_args]
-
-        for args in task_args:
-            print(args)
+        futures = [executor.submit(scan_area_bf, *args) for args in task_args]
         
         for future in as_completed(futures):
             # retrieve the result
@@ -133,15 +142,16 @@ def part_two(sensor_beacon_pairs, xy_limit):
                 distress_beacon = result
                 break
 
-
-    print(distress_beacon)
     return distress_beacon.x * 4000000 + distress_beacon.y
+
 
 if __name__ == '__main__':
     ex1 = read_input('ex1.txt')
     assert part_one(ex1, 10) == 26
-    assert part_two(ex1, 20) == 56000011
+    assert part_two_bf(ex1, 20) == 56000011
+
+    print('==== Assertions Passed ====')
 
     sensor_beacon_pairs = read_input()
     # print(f'Part one: {part_one(sensor_beacon_pairs, 2000000)}')
-    print(f'Part two: {part_two(sensor_beacon_pairs, 4000000)}')
+    print(f'Part two: {part_two_bf(sensor_beacon_pairs, 4000000)}')
