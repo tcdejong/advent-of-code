@@ -75,6 +75,8 @@ async def download_and_write_day_input(day_folder: Path):
             return
 
         url = get_input_url_from_day_folder_path(day_folder)
+        assert isinstance(url, str)
+        
         async with session.get(url) as resp:
             data = await resp.read()
             data = data.decode()
