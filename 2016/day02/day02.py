@@ -3,7 +3,24 @@ ex1 = ["ULL",
 "LURDL",
 "UUUUD"]
 
-def read_input(filename: str = 'day2.txt'):
+KEYPAD = {(row,col): 3*row+col+1 for row in range(3) for col in range(3)}
+SHITPAD = {
+    (0, 2): '1',
+    (1, 1): '2',
+    (1, 2): '3',
+    (1, 3): '4',
+    (2, 0): '5',
+    (2, 1): '6',
+    (2, 2): '7',
+    (2, 3): '8',
+    (2, 4): '9',
+    (3, 1): 'A',
+    (3, 2): 'B',
+    (3, 3): 'C',
+    (4, 2): 'D'
+}
+
+def read_input(filename: str = 'input.txt'):
     with open(filename) as f:
         return [line.strip() for line in f.readlines()]
 
@@ -46,23 +63,6 @@ def part_two(instructions):
 
 
 if __name__ == '__main__':
-    KEYPAD = {(row,col): 3*row+col+1 for row in range(3) for col in range(3)}
-    SHITPAD = {
-        (0, 2): '1',
-        (1, 1): '2',
-        (1, 2): '3',
-        (1, 3): '4',
-        (2, 0): '5',
-        (2, 1): '6',
-        (2, 2): '7',
-        (2, 3): '8',
-        (2, 4): '9',
-        (3, 1): 'A',
-        (3, 2): 'B',
-        (3, 3): 'C',
-        (4, 2): 'D'
-    }
-
     instructions = read_input()
     part_one(instructions)
     part_two(instructions)
