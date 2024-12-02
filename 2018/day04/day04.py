@@ -1,13 +1,11 @@
 from datetime import datetime
 import re
-import os
-import sys
 
-filePath = os.path.join(sys.path[0], "day4.txt")
+file_path = "input.txt"
 
 events = []
 
-with open(filePath) as file:
+with open(file_path) as file:
     for line in file:
         dateTimeStr, event = line[1:].split("]")
         dateStamp = datetime.strptime(dateTimeStr, '%Y-%m-%d %H:%M')
@@ -34,7 +32,7 @@ for dt, event in events:
             minutesAsleep[id][t] += 1
 
 
-def strategy1():
+def part_one():
     chosenID = max(minutesAsleep,
                    key=lambda id: sum(minutesAsleep[id].values())
                    )
@@ -44,9 +42,10 @@ def strategy1():
     print("Part 1:", chosenID * chosenMinute)
 
 
-def strategy2():
+def part_two():
     globalMax = 0
     chosenMinute = -1
+    chosenID = ''
     for id in minutesAsleep:
         sleepCounts = minutesAsleep[id]
         localMinute = max(sleepCounts, key=lambda m: sleepCounts[m])
@@ -54,8 +53,9 @@ def strategy2():
         if localMax > globalMax:
             chosenID, chosenMinute, globalMax = id, localMinute, localMax
 
+
     print("Part 2:", chosenID * chosenMinute)
 
 
-strategy1()
-strategy2()
+part_one()
+part_two()
