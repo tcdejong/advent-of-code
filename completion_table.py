@@ -33,6 +33,7 @@ def parse_progress_html(html: str, year: AoCYear):
     soup = bs4.BeautifulSoup(html, 'html.parser')
     num_stars: ProgressDict = {}
   
+    assert soup.pre 
     for day_a in soup.pre.find_all('a'):
         day_classes = day_a['class']
         day_num = int(day_classes[0].lstrip('calendar-day'))
