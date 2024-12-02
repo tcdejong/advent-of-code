@@ -140,6 +140,8 @@ def part_one(hex_str=False):
     if not hex_str:
         hex_str = read_input()
 
+    assert isinstance(hex_str, str)
+
     binstr = hexstr2binstr(hex_str)
     packet, _ = read_packet(binstr)
 

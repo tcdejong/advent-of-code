@@ -29,6 +29,9 @@ def part_one(door_id):
     code = ""
     for _ in range(8):
         char, idx = crack_code_letter(door_id, idx)
+        assert isinstance(char, str)
+        assert isinstance(idx, int)
+
         code += char
         idx += 1
 
@@ -40,6 +43,9 @@ def part_two(door_id):
     code = ['_' for _ in range(8)]
     while any(c == '_' for c in code):
         pos, char, idx = crack_code_letter(door_id, idx, True)
+        assert isinstance(pos, int)
+        assert isinstance(char, str)
+        assert isinstance(idx, int)
 
         if code[pos] == '_':
             code[pos] = char

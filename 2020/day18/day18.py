@@ -67,6 +67,8 @@ def solve_simple(expression: str, part=1) -> int:
 
         expression = ' '.join(expression)
         return solve_simple(expression)
+    
+    raise NotImplementedError()
 
             
 

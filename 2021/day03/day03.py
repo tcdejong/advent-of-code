@@ -38,6 +38,9 @@ def part_two():
     oxy = filter_bits(bits, True)
     co2 = filter_bits(bits, False)
 
+    assert oxy
+    assert co2
+
     print(oxy, co2)
 
     return oxy * co2

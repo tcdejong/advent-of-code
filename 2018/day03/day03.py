@@ -82,6 +82,7 @@ def partTwo():
 
     for id in claims.keys():
         claim = claims.get(id)
+        assert claim
         for x in range(claim[0], claim[0] + claim[2]):
             for y in range(claim[1], claim[1] + claim[3]):
                 bundled = bundleXY(x, y)
@@ -92,6 +93,8 @@ def partTwo():
 
     for id in claims.keys():
         claim = claims.get(id)
+        assert claim
+        
         overlaps = False
         for x in range(claim[0], claim[0] + claim[2]):
             for y in range(claim[1], claim[1] + claim[3]):

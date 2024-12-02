@@ -44,6 +44,8 @@ def partOne():
         if closest == -1:
             continue
 
+        assert isinstance(p, tuple)
+
         x, y = p
         if not xmin <= x <= xmax or not ymin <= y <= ymax:
             infRoots.add(closest)
