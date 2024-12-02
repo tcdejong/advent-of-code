@@ -1,7 +1,7 @@
 import os
 import sys
 
-inputPath = os.path.join(sys.path[0], "day3.txt")
+inputPath = os.path.join(sys.path[0], "input.txt")
 
 BIT_SHIFT = 10
 

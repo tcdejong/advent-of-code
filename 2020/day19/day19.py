@@ -1,4 +1,4 @@
-def read_input(fp='day19.txt') -> tuple(dict, list):
+def read_input(fp='day19.txt') -> tuple[dict, list]:
     """
     Read and format puzzle input
     Return dictionary of rules and list of messages
@@ -23,7 +23,7 @@ def clean_rule(rule:str):
         3. a rule to match n characters to either of two rules of type 2., 
     """
 
-    def clean_segment(segment) -> tuple(int):
+    def clean_segment(segment):
         "Convert a rule of type 1 or 2 from str to a str or tuple of ints"
         print(f'cleaning {segment=}')
 
@@ -66,7 +66,8 @@ def resolve_rules(rules):
             pass
 
         if isinstance(r[0], tuple):
-            resolve_single()
+            pass
+            # resolve_single()
 
 
 

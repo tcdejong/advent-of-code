@@ -9,7 +9,7 @@ import aiohttp
 import aiofiles
 import bs4
 
-from lib import get_event_years, read_session_token, AOC_DAYS
+from lib.lib import get_event_years, read_session_token, AOC_DAYS
 
 
 def get_event_year_folders():

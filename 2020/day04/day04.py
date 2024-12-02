@@ -23,19 +23,19 @@ VALID_ECL = set([
 VALID_HCL = set([*list(ascii_lowercase[:6]), *[str(i) for i in range(10)]])
 
 
-def read_passports(file_name = 'day4.txt'):
+def read_passports(file_name = 'input.txt'):
     with open(file_name) as file:
         return file.read().split('\n\n')
 
 
-def clean_passport(passport:str):
-    passport = passport.split()
+def clean_passport(passport_raw:str):
+    passport = passport_raw.split()
     passport = dict(field.split(':') for field in passport)
     return passport
 
 
-def is_valid(pp: str, part_two = True):
-    pp = clean_passport(pp)
+def is_valid(passport_raw: str, part_two = True):
+    pp = clean_passport(passport_raw)
 
     if part_two:
         for field in REQUIRED_FIELDS:

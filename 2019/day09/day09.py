@@ -86,7 +86,7 @@ class intcodeComputer:
                 self.status = ERR_OPCODE
                 break
 
-            self.pointer += nParams.get(opcode) + 1
+            self.pointer += nParams[opcode] + 1
 
         return self.out
 
@@ -104,13 +104,15 @@ class intcodeComputer:
             modes = digits[0:-2]
         elif digits[-2] == 9 and digits[-1] == 9:
             opcode = 99
+        else:
+            raise RuntimeError
 
-        leadingZeros = nParams.get(opcode) - len(modes)
+        leadingZeros = nParams[opcode] - len(modes)
         modes = leadingZeros * [0] + modes
         modes.reverse()
 
-        params = list(range(pointer + 1, pointer + 1 + nParams.get(opcode)))
-        for i in range(nParams.get(opcode)):
+        params = list(range(pointer + 1, pointer + 1 + nParams[opcode]))
+        for i in range(nParams[opcode]):
             mode = modes[i]
             if mode == 0:
                 params[i] = intCode[params[i]]

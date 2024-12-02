@@ -106,7 +106,7 @@ class Wire:
 
         
 
-def readInput(ex=""):
+def readInput(ex:str|int=""):
     """ 
     Read steps from puzzle input or examples, 
     Convert steps to Nodes, 

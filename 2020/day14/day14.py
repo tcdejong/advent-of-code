@@ -45,6 +45,8 @@ def part_one(program: list[str]) -> int:
 
 def part_two(program: list[str], verbose = False) -> int:
     memory = dict()
+    float_str = ''
+    mask_on = 0
 
     for line in program:
         # print(line)

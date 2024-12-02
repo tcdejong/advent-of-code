@@ -166,10 +166,10 @@ def compare_to_example(options: list[tuple[int, int]]):
     for item in line.split()]
 
     ex_options = set(ex_options)
-    options = set(options)
+    options_set: set = set(options)
 
-    wrong_options = options - ex_options
-    missing_options = ex_options - options
+    wrong_options = options_set - ex_options
+    missing_options = ex_options - options_set
 
     if wrong_options:
         print("Options that are falsely included:")

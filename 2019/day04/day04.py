@@ -46,7 +46,7 @@ def nextPassword(password, res):
             else:
                 last = d
         
-        newPassword = [*digits[:i], *[last for _ in range(NUM_DIGITS-i)]]
+        newPassword = [*digits[:i], *[last for _ in range(NUM_DIGITS-i)]] # type: ignore
         return int(''.join(map(str,newPassword)))
     else:
         return password + 1

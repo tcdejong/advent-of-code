@@ -2,16 +2,19 @@ AIR = 0
 STONE = 1
 SAND = 2
 
-SAND_ORIGIN = 500,0
+SAND_ORIGIN = 500, 0
 
-def read_input(filename: str = 'input.txt'):
+
+def read_input(filename: str = "input.txt"):
     with open(filename) as f:
-        data = [tuple(tuple(int(v) for v in point.split(',')) for point in line.split(' -> '))for line in f.readlines()]
+        data = [tuple(tuple(int(v) for v in point.split(",")) for point in line.split(" -> ")) for line in f.readlines()]
 
-    return data
+    typed_data: list[tuple[tuple[int, int], ...]] = data
+
+    return typed_data
 
 
-def map_stone_locations(stone_paths: list[tuple[int,int]]):
+def map_stone_locations(stone_paths: list[tuple[tuple[int, int], ...]]):
     map = {}
     for path in stone_paths:
         while len(path) >= 2:
@@ -29,16 +32,15 @@ def map_stone_locations(stone_paths: list[tuple[int,int]]):
 def get_coords_between_points(p0, p1):
     x0, y0 = p0
     x1, y1 = p1
-    
+
     if x1 < x0:
         x0, x1 = x1, x0
     if y1 < y0:
         y0, y1 = y1, y0
 
-    points = ((x, y) for x in range(x0, x1+1) for y in range(y0, y1+1))
+    points = ((x, y) for x in range(x0, x1 + 1) for y in range(y0, y1 + 1))
 
     return points
-
 
 
 def produce_sand_unit(map, origin):
@@ -53,9 +55,9 @@ def produce_sand_unit(map, origin):
         if y > max_y:
             return False
 
-        tile_down = (x, y+1)
-        tile_down_left = (x-1, y+1)
-        tile_down_right = (x+1, y+1)
+        tile_down = (x, y + 1)
+        tile_down_left = (x - 1, y + 1)
+        tile_down_right = (x + 1, y + 1)
 
         for tile in [tile_down, tile_down_left, tile_down_right]:
             if map.get(tile, AIR) == AIR:
@@ -64,8 +66,7 @@ def produce_sand_unit(map, origin):
         else:
             map[sand_pos] = SAND
             return True
-        
-        
+
 
 def print_map(map, spacing=2):
     min_x = min(xy[0] for xy in map.keys()) - spacing
@@ -83,10 +84,9 @@ def print_map(map, spacing=2):
         SAND: SYM_SAND,
     }
 
-    grid = ["".join([SYMBOLS[map.get((x,y), AIR)] for x in range(min_x, max_x+1)]) for y in range(min_y, max_y+1)]
+    grid = ["".join([SYMBOLS[map.get((x, y), AIR)] for x in range(min_x, max_x + 1)]) for y in range(min_y, max_y + 1)]
 
     print("\n".join(grid))
-
 
 
 def part_one(puzzle_input):
@@ -96,10 +96,8 @@ def part_one(puzzle_input):
     while produce_sand_unit(map, SAND_ORIGIN):
         sand_produced += 1
 
-    print_map(map)
+    # print_map(map)
     return sand_produced
-
-
 
 
 def part_two(puzzle_input):
@@ -115,22 +113,20 @@ def part_two(puzzle_input):
     for tile in get_coords_between_points(floor_l, floor_r):
         map[tile] = STONE
 
-
     sand_produced = 0
     while produce_sand_unit(map, SAND_ORIGIN):
         sand_produced += 1
         if SAND_ORIGIN in map:
             break
 
-    print_map(map)
+    # print_map(map)
     return sand_produced
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     puzzle_input = read_input()
     # puzzle_input = read_input('ex1.txt')
     map = map_stone_locations(puzzle_input)
 
-    # print(f'Part one: {part_one(puzzle_input)}')
-    print(f'Part two: {part_two(puzzle_input)}')
+    print(f"Part one: {part_one(puzzle_input)}")
+    print(f"Part two: {part_two(puzzle_input)}")

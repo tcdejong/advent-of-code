@@ -1,5 +1,5 @@
 def read_input():
-    with open("day2.txt") as file:
+    with open("input.txt") as file:
         lines = file.readlines()
     
     return lines
@@ -8,7 +8,7 @@ def read_input():
 def clean_line(line: str):
     line = line.strip()
     if not line:
-        return False
+        raise ValueError
 
     policy, letter, password = line.split(" ")
 

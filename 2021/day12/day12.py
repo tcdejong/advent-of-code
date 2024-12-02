@@ -1,10 +1,10 @@
 from collections import defaultdict, Counter
 
-def read_input(filename: str = "day12.txt"):
+def read_input(filename: str = "input.txt"):
     with open(filename) as f:
         edges = [line.strip().split('-') for line in f.readlines()]
 
-    graph = defaultdict(set)
+    graph: defaultdict[str, set[str]] = defaultdict(set)
 
     for (O, D) in edges:
         graph[O].add(D)
@@ -14,9 +14,10 @@ def read_input(filename: str = "day12.txt"):
 
 
 def part_one():
-    cave = read_input("day12.txt")
+    cave = read_input()
     path = ['start']
     paths = finish_path(path, cave)
+    assert paths
     return len(paths)
 
 
@@ -47,9 +48,10 @@ def finish_path(path: list[str], cave: dict, part=1):
 
 
 def part_two():
-    cave = read_input("day12.txt")
+    cave = read_input()
     path = ['start']
     paths = finish_path(path, cave, part=2)
+    assert paths
     return len(paths)
 
 

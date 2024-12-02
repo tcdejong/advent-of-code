@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 def read_input():
-    with open("day4.txt") as f:
+    with open("input.txt") as f:
         raw = f.readlines()
 
     numbers = [int(x) for x in raw[0].strip().split(',')]
@@ -38,7 +38,7 @@ class BingoBoard:
         result = any(all(x in seen for x in line) for line in lines)
         return result
 
-    def calc_score(self, seen, last_num):
+    def calc_score(self, seen, last_num: int):
         unmarked = sum(x for x in self.board if x not in seen)
         score = unmarked * last_num
         print(f'{unmarked=}, {score=}, {last_num=}')
@@ -49,6 +49,7 @@ class BingoBoard:
             seen = numbers[:i]
             if self.has_won(seen):
                 return i
+        raise ValueError
 
     def __repr__(self) -> str:
         rows = self.get_rows()

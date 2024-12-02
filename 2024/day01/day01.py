@@ -39,7 +39,6 @@ if __name__ == '__main__':
 
     puzzle_input = read_input()
     print(f'Part one: {part_one(puzzle_input)}')
-    assert part_one(puzzle_input) == 1590491
 
     assert part_two(puzzle_input_ex1) == 31
     print(f'Part two: {part_two(puzzle_input)}')

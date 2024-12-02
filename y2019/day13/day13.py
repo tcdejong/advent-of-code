@@ -50,7 +50,8 @@ def partTwo():
 
 def chooseMove(screen):
     ball = [0,0]
-    paddle = [0,0]
+    paddle=[0,0]
+
     for y in screen:
         for x in screen[y]:
             if screen[y][x] == symbols[4]:
@@ -67,7 +68,7 @@ def chooseMove(screen):
     
 
 def drawScreen(data, score, old={}):
-    screen: dict[int, dict[int,str]] = dict()
+    screen = dict()
 
     if old:
         screen = old

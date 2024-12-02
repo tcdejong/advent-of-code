@@ -44,6 +44,7 @@ def read_literal(binstr, packet_version, packet_type):
     data_bits = binstr[6:]
     block_width = 5
     num_blocks = ceil(len(data_bits) / block_width)
+    i = -1
     
     data = ""
     for block in range(num_blocks):
@@ -132,10 +133,10 @@ def resolve_packet(packet: Packet) -> int:
         if packet.type == PTYPE_EQ:
             return int(sub1 == sub2)
     
-    return ValueError("Sanity check: Should never reach this...")
+    raise ValueError("Sanity check: Should never reach this...")
     
 
-def part_one(hex_str=False):
+def part_one(hex_str:str|bool=False):
 
     if not hex_str:
         hex_str = read_input()

@@ -5,7 +5,7 @@ import pandas as pd
 from functools import reduce
 
 
-def read_input(filename: str = 'day14.txt'):
+def read_input(filename: str = 'input.txt'):
     with open(filename) as f:
         data = f.readlines()
     
@@ -25,7 +25,7 @@ def part_two():
 
 
 def day_14(use_ex=False, iterations=40):
-    input_name = 'day14ex.txt' if use_ex else 'day14.txt'
+    input_name = 'ex1.txt' if use_ex else 'input.txt'
     polymer, rules = read_input(input_name) 
 
     # Determine all elements from the rules and input polymer
@@ -34,7 +34,7 @@ def day_14(use_ex=False, iterations=40):
     mat = reduce(lambda a,b: a@b, (mat for _ in range(iterations)))
 
     # Turn starting polymer to state vector, with same format as transition matrix, then multiply
-    state = polymer_to_state(polymer).reindex_like(mat).fillna(0)
+    state = polymer_to_state(polymer).reindex_like(mat.iloc[:, 0]).fillna(0)
     new_state = state @ mat
 
     answer = state_to_answer(new_state, polymer)
@@ -87,7 +87,7 @@ def generate_pair_matrix(polymer, rules):
 
     # Generate empty transition matrix
     mat = pd.DataFrame(index=pairs, columns=pairs).fillna(0)
-    mat = mat.convert_dtypes(np.uint64)
+    mat = mat.astype(np.uint64)
 
     # Fill transition matrix rows
     for pair in pairs:

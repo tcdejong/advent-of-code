@@ -1,10 +1,11 @@
 from collections import namedtuple
 Move = namedtuple('Move', 'times orig dest')
 
-def read_input(filename: str = 'day05.txt'):
+def read_input(filename: str = 'input.txt'):
     with open(filename) as f:
         data = [line for line in f.read().splitlines()]
 
+    bottom_stack_row = 0
     for i, line in enumerate(data):
         if line == "":
             bottom_stack_row = i-1

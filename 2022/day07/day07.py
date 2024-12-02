@@ -70,7 +70,7 @@ class FileSystem:
 
         if len(path) > 1:
             parent_folder = self.folders[path[:-1]]
-            parent_folder.subfolders.add(path)
+            parent_folder.subfolders.add(path) # type: ignore
 
 
     def get_dir_size(self, path):

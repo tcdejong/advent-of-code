@@ -2,8 +2,8 @@ import os
 import sys
 
 
-def loadInput():
-    filePath = os.path.join(sys.path[0], "day6.txt")
+def loadInput() -> list[tuple[str, int, int]]:
+    filePath = os.path.join(sys.path[0], "input.txt")
 
     roots = []
 
@@ -18,17 +18,16 @@ def loadInput():
     return roots
 
 
-def buildWorld(roots, worldOnly=False):
+def buildWorld(roots: list[tuple[str, int, int]]):
     # define world boundary to be a bounding box around all coordinates
-    xmin, xmax = min(roots, key=lambda r: r[1])[1] - 1, max(roots, key=lambda r: r[1])[1] + 1
-    ymin, ymax = min(roots, key=lambda r: r[2])[2] - 1, max(roots, key=lambda r: r[2])[2] + 1
+    xmin = min(roots, key=lambda r: r[1])[1] - 1
+    xmax = max(roots, key=lambda r: r[1])[1] + 1
+    ymin = min(roots, key=lambda r: r[2])[2] - 1
+    ymax = max(roots, key=lambda r: r[2])[2] + 1
 
     world = set([(x, y) for x in range(xmin, xmax) for y in range(ymin, ymax)])
 
-    if worldOnly:
-        return world
-    else:
-        return (world, xmin, xmax, ymin, ymax)
+    return (world, xmin, xmax, ymin, ymax)
 
 
 def partOne():
@@ -99,7 +98,7 @@ def addedDistance(p, roots):
 
 def partTwo():
     roots = loadInput()
-    world = buildWorld(roots, True)
+    world = buildWorld(roots)[0]
 
     res = 0
     thresh = 10000

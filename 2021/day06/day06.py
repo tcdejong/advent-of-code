@@ -1,7 +1,7 @@
 from collections import Counter, defaultdict
 
 
-def read_input() -> list[int]:
+def read_input():
     with open("day6.txt") as f:
         data = f.read()
 

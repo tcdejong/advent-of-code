@@ -6,6 +6,7 @@ def read_input(filename: str = 'day06.txt'):
 
 
 def part_one(puzzle_input, packet_length = 4):
+    i=0
     for i, _ in enumerate(puzzle_input):
         if len(set(puzzle_input[i:i+packet_length])) == packet_length:
             break

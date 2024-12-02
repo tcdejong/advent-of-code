@@ -3,7 +3,7 @@ from dataclasses import dataclass
 Position = tuple[int, int]
 
 def read_input(use_example = False):
-    filename = 'day15ex.txt' if use_example else 'day15.txt'
+    filename = 'ex1.txt' if use_example else 'input.txt'
     with open(filename) as f:
         raw = [list(int(i) for i in line.strip()) for line in f.readlines() if line]
 
@@ -11,20 +11,20 @@ def read_input(use_example = False):
     return cavemap
 
 
-def part_one(use_example):
+def part_one(use_example: bool):
     cavemap = read_input(use_example)
     navi = CaveNavigator(cavemap)
     return navi.navigate()
 
 
-def part_two(use_example):
+def part_two(use_example: bool):
     cavemap = read_input(use_example)
     new_map = update_cavemap(cavemap)
     navi = CaveNavigator(new_map)
     return navi.navigate()
 
 
-def update_cavemap(cavemap: dict[Position: int]):
+def update_cavemap(cavemap: dict[Position, int]):
     # For each point generate 4 points repeated on x
     # For the 5 points on x, generated 5 copies on y
 
@@ -50,7 +50,7 @@ def update_cavemap(cavemap: dict[Position: int]):
 
 @dataclass
 class CaveNavigator:
-    cavemap: dict[Position: int]
+    cavemap: dict[Position, int]
 
     def __post_init__(self):
         self.start_node: Position = (0,0)
@@ -61,13 +61,13 @@ class CaveNavigator:
         # H-cost: assumed distance to end
         # F-cost: G-cost + H-cost
 
-        self.g_costs = {self.start_node: 0}
-        self.h_costs = {}
+        self.g_costs: dict[Position, int] = {self.start_node: 0}
+        self.h_costs: dict[Position, int] = {}
         self.get_h_cost(self.start_node)
 
-        self.open_nodes: set(Position) = {self.start_node}
-        self.seen_nodes: set(Position) = set()
-        self.arrive_from: dict[Position: Position] = {self.start_node: self.start_node}
+        self.open_nodes: set[Position] = {self.start_node}
+        self.seen_nodes: set[Position] = set()
+        self.arrive_from: dict[Position, Position] = {self.start_node: self.start_node}
 
 
     def get_f_cost(self, node: Position):

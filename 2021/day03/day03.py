@@ -5,8 +5,8 @@
 NUM_BITS = 12
 
 def read_input() -> list[str]:
-    with open("day3.txt") as f:
-        return [list(x.strip()) for x in f if x.strip()]
+    with open("input.txt") as f:
+        return [line.strip() for line in f.readlines()]
 
 
 def determine_gamma(data: list[str]) -> int:

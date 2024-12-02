@@ -53,7 +53,7 @@ class intCodeComputer:
                 intCode[par[0]] = inputs.pop(0)
             elif opcode == OUTP:
                 self.out = intCode[par[0]]
-                self.pointer += nParams.get(opcode) + 1
+                self.pointer += nParams[opcode] + 1
                 break
                 # print("Program output:" + str(intCode[par[0]]))
             elif opcode == JIFT:
@@ -75,7 +75,7 @@ class intCodeComputer:
                 print(intCode[pointer], opcode)
                 break
 
-            self.pointer += nParams.get(opcode) + 1
+            self.pointer += nParams[opcode] + 1
 
         return self.out
 
@@ -96,13 +96,15 @@ class intCodeComputer:
             modes = digits[0:-2]
         elif digits[-2] == 9 and digits[-1] == 9:
             opcode = 99
+        else:
+            raise RuntimeError
 
-        leadingZeros = nParams.get(opcode) - len(modes)
+        leadingZeros = nParams[opcode] - len(modes)
         modes = leadingZeros * [0] + modes
         modes.reverse()
 
-        params = list(range(pointer + 1, pointer + 1 + nParams.get(opcode)))
-        for i in range(nParams.get(opcode)):
+        params = list(range(pointer + 1, pointer + 1 + nParams[opcode]))
+        for i in range(nParams[opcode]):
             if modes[i] == 0:
                 params[i] = intCode[params[i]]
 
@@ -135,13 +137,14 @@ def partOne():
 
     for order in phaseCodes:
         thrust = runPhaseCodeSequence(order)
+        assert isinstance(thrust, int)
         if thrust > maxThrusters:
             maxThrusters = thrust
 
     print(maxThrusters)
 
 
-def runPhaseCodeSequence(seq):
+def runPhaseCodeSequence(seq: tuple[int, ...]):
     res = 0
     for val in seq:
         program = programs["boosters"]
@@ -163,11 +166,11 @@ def runFeedbackCodeSequence(seq, programName="boosters"):
     signal = 0
     while True:
         for vm in vms:
-            signal = vm.runIntCode([signal])
+            signal: int = vm.runIntCode([signal])
         
         # print(vm.program[vm.pointer], signal)
         
-        if vm.program[vm.pointer] == 99:
+        if vm.program[vm.pointer] == 99: # type: ignore
             break
 
     # print(signal)

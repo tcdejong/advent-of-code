@@ -4,12 +4,12 @@ from dataclasses import dataclass
 MicroChip = namedtuple("MicroChip", "val target output") 
 # val=value, target=id of bot/output, output distinguishes bot/outputs
 
-def read_input(filename: str = 'day10.txt'):
+def read_input(filename: str = 'input.txt'):
     with open(filename) as f:
         data = [line.strip() for line in f.readlines()]
 
     bot_instructions = [line.split() for line in data if line.startswith('bot')]
-    bots_sorted = [None for _ in bot_instructions]
+    bots_sorted: list[Bot] = [None for _ in bot_instructions]
 
     for instr in bot_instructions:
         botnum = int(instr[1])

@@ -43,9 +43,10 @@ def all_coords_within_range(p: Point, maxdist: int) -> set[Point]:
 
 def all_coords_at_exact_dist(p: Point, dist: int) -> list[Point]:
     points = [Point(p.x+dx, p.y+(dist-abs(dx))) for dx in range(-dist, dist+1)]
+    return points
 
 
-def part_one(sensor_beacon_pairs: tuple[SensorBeaconPair], y):
+def part_one(sensor_beacon_pairs: tuple[SensorBeaconPair, ...], y):
     sensor_beacon_distance_triplets = tuple((sensor, beacon, manhattan_dist(sensor, beacon)) for sensor, beacon in sensor_beacon_pairs)
 
     max_dist = max(sbd[2] for sbd in sensor_beacon_distance_triplets)
@@ -123,7 +124,7 @@ def scan_pulsing_out(sensor, dist, ):
 
 
 # The brutest of forces!
-def part_two_bf(sensor_beacon_pairs: list[SensorBeaconPair], xy_limit):
+def part_two_bf(sensor_beacon_pairs: tuple[SensorBeaconPair, ...], xy_limit):
     from concurrent.futures import ProcessPoolExecutor, as_completed
 
     workers = 6
@@ -132,7 +133,7 @@ def part_two_bf(sensor_beacon_pairs: list[SensorBeaconPair], xy_limit):
     
     with ProcessPoolExecutor(max_workers=workers) as executor:
         task_args = [(range_x, range(0,xy_limit+1), sensor_distances) for range_x in scan_ranges_x]
-        futures = [executor.submit(scan_area_bf, *args) for args in task_args]
+        futures = [executor.submit(scan_area_bf, *args) for args in task_args] # type: ignore
         
         for future in as_completed(futures):
             # retrieve the result
@@ -140,9 +141,10 @@ def part_two_bf(sensor_beacon_pairs: list[SensorBeaconPair], xy_limit):
 
             if isinstance(result, Point):
                 distress_beacon = result
-                break
+                return distress_beacon.x * 4000000 + distress_beacon.y
 
-    return distress_beacon.x * 4000000 + distress_beacon.y
+    raise ValueError
+    
 
 
 if __name__ == '__main__':

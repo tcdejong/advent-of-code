@@ -22,7 +22,7 @@ class Knot:
         self._x = x
         self._y = y
 
-    def move(self, v: tuple[int, int]):
+    def move(self, v: tuple[int,int]):
         self._x = self.x
         self._y = self.y
         
@@ -40,7 +40,7 @@ class Knot:
         if self.y != knot.y:
             v[1] = -1 if self.y > knot.y else 1
 
-        return v
+        return (v[0], v[1])
 
     def be_pulled_by(self, knot: 'Knot'):
         if not self.is_pulled_by(knot):

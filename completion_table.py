@@ -13,7 +13,7 @@ AoCDay = int
 NumStars = int
 ProgressDict = dict[tuple[AoCYear, AoCDay], NumStars]
 
-from lib import AOC_DAYS, aoc_session, get_event_years
+from lib.lib import AOC_DAYS, aoc_session, get_event_years
 import aiohttp
 import asyncio
 import bs4
@@ -61,7 +61,7 @@ def print_table(num_stars: ProgressDict):
     years = set(key[0] for key in num_stars.keys())
 
     for year in sorted(years):
-        progress = [COMPLETION_MARKS[num_stars[(year, day)]] for day in AOC_DAYS]
+        progress = [COMPLETION_MARKS[num_stars.get((year, day), 0)] for day in AOC_DAYS]
         print(" | ".join([str(year), *progress]))
 
 

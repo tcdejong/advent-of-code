@@ -1,4 +1,4 @@
-def read_input(filename: str = 'day13.txt'):
+def read_input(filename: str = 'input.txt'):
     with open(filename) as f:
         data = [line.strip() for line in f.readlines() if line.strip()]
 
@@ -6,7 +6,10 @@ def read_input(filename: str = 'day13.txt'):
     dots = [line.split(',') for line in dots]
     dots = set([tuple(int(x) for x in dot) for dot in dots])
     folds = [line.replace('fold along ', '').partition('=') for line in data if line[0] == "f"]
-    return dots, folds
+
+    dots_typed: set[tuple[int,int]] = dots
+
+    return dots_typed, folds
 
 
 def fold_dot(dot: tuple[int, int], fold: tuple[str, str, str]) -> tuple[int,int]:
@@ -42,6 +45,7 @@ def part_two():
         dots = set([fold_dot(dot, fold) for dot in dots])
 
     print_dots(dots)
+    return('See printed letters')
 
 
 if __name__ == '__main__':

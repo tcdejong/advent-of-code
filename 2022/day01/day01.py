@@ -1,4 +1,4 @@
-def read_input(filename: str = 'day01.txt'):
+def read_input(filename: str = 'input.txt'):
     with open(filename) as f:
         lines = f.read().splitlines()
     
@@ -56,7 +56,7 @@ if __name__ == '__main__':
     8000
     9000
 
-    10000""".splitlines())
+    10000""".splitlines()) # type: ignore
 
     assert part_one(ex1) == 24000
     print(f'Part one: {part_one(puzzle_input)}')

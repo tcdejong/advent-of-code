@@ -1,0 +1,1 @@
+from lib.intcode import intcode

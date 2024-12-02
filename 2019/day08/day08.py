@@ -22,6 +22,7 @@ def getLayers(w, h):
 def partOne(w, h):
     layers = getLayers(w, h)
     leastZeros = w * h
+    ones, twos = 0, 0
     for layer in layers.values():
         zeros = layer.count(0)
         if zeros < leastZeros:

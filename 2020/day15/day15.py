@@ -2,7 +2,7 @@ from collections import defaultdict
 
 def numbers_game(numbers: list[int], end_turn = 2020) -> int:
     numbers = [i for i in numbers]
-    last_spoken = defaultdict(lambda: (-1,-1))
+    last_spoken: defaultdict[int, tuple[int, int]] = defaultdict(lambda: (-1,-1))
     number = -1
     turn = 1
 
