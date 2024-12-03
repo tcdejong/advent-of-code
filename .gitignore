@@ -1,11 +1,7 @@
 
 .vscode/
-2019/day4_Newti.py
 .mypy_cache/
-2019/__pycache__/
-2019/.mypy_cache/
 **/*.txt
-.vscode/aoc-snippets.code-snippets
 .session_token
 __pycache__
 *.html
