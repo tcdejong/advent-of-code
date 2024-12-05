@@ -6,9 +6,7 @@ def read_input(filename: str = "input.txt"):
         data = f.read().strip()
         raw_order_rules, updates = data.split("\n\n")
 
-    order_rules: list[tuple[int, int]] = [
-        tuple(int(x) for x in line.split("|")) for line in raw_order_rules.splitlines()
-    ]
+    order_rules: list[tuple[int, int]] = [tuple(int(x) for x in line.split("|")) for line in raw_order_rules.splitlines()]
     updates = [tuple(int(x) for x in line.split(",")) for line in updates.splitlines()]
 
     rule_dict: defaultdict[int, set[int]] = defaultdict(set)
@@ -34,9 +32,7 @@ def is_valid_update(rule_dict: defaultdict[int, set[int]], update):
     return True
 
 
-def fix_update(
-    rule_dict: defaultdict[int, set[int]], update: tuple[int, ...]
-) -> tuple[int, ...]:
+def fix_update(rule_dict: defaultdict[int, set[int]], update: tuple[int, ...]) -> tuple[int, ...]:
     seen: set[int] = set()
     fixed: list[int] = []
     for page in update:
@@ -56,18 +52,14 @@ def fix_update(
 def part_one(rule_dict: defaultdict[int, set[int]], updates: list[tuple[int, ...]]):
     valid_updates = [update for update in updates if is_valid_update(rule_dict, update)]
     middle_indexes = [(len(update) + 1) // 2 - 1 for update in valid_updates]
-    sum_of_middle_numbers = sum(
-        update[idx] for update, idx in zip(valid_updates, middle_indexes)
-    )
+    sum_of_middle_numbers = sum(update[idx] for update, idx in zip(valid_updates, middle_indexes))
     return sum_of_middle_numbers
 
 
 def part_two(rule_dict: defaultdict[int, set[int]], updates: list[tuple[int, ...]]):
     fixed_updates = [fix_update(rule_dict, update) for update in updates if not is_valid_update(rule_dict, update)]
     middle_indexes = [(len(update) + 1) // 2 - 1 for update in fixed_updates]
-    sum_of_middle_numbers = sum(
-        update[idx] for update, idx in zip(fixed_updates, middle_indexes)
-    )
+    sum_of_middle_numbers = sum(update[idx] for update, idx in zip(fixed_updates, middle_indexes))
     return sum_of_middle_numbers
 
 
