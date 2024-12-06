@@ -33,7 +33,7 @@ def read_input(filename: str = "input.txt"):
 
 class PatrolMap:
     def __init__(self, data: list[str]):
-        self.obstuctions: set[TPosition] = set()
+        self.obstructions: set[TPosition] = set()
         self.guard_pos: TPosition
         self.guard_dir: TDirection
 
@@ -43,7 +43,7 @@ class PatrolMap:
         self.guard_visited: set[TGuard] = set()
 
     def parse_map(self, data: list[str]):
-        self.obstuctions = {(x, y) for y, row in enumerate(data) for x, char in enumerate(row) if char == SYMBOL_OBSTRUCTION}
+        self.obstructions = {(x, y) for y, row in enumerate(data) for x, char in enumerate(row) if char == SYMBOL_OBSTRUCTION}
         for y, row in enumerate(data):
             for x, char in enumerate(row):
                 if char == SYMBOL_GUARD_U:
@@ -58,12 +58,20 @@ class PatrolMap:
             self.guard_visited.add((self.guard_pos, self.guard_dir))
             next_space: TPosition = tuple(sum(xy) for xy in zip(self.guard_pos, self.guard_dir))
 
-            if next_space in self.obstuctions:
+            if next_space in self.obstructions:
                 self.rotate_guard()
             else:
                 self.guard_pos = next_space
 
         return False
+    
+    def obstruction_causes_loop(self, obs: TPosition):
+        if obs == self.guard_pos:
+            return False
+            
+        self.obstructions.add(obs)
+        self.simulate_guard()
+        return self.guard_is_looping()
 
     def guard_left_area(self):
         x, y = self.guard_pos
@@ -80,7 +88,7 @@ class PatrolMap:
     def print_map(self):
         map = [list("." * self.dimensions[0]) for _ in range(self.dimensions[1])]
 
-        for x, y in self.obstuctions:
+        for x, y in self.obstructions:
             map[y][x] = SYMBOL_OBSTRUCTION
 
         for (x, y), _ in self.guard_visited:
@@ -114,15 +122,11 @@ def part_two(puzzle_input):
     options: set[TPosition] = set()
 
     for x in range(maxx):
-        print(f'{x=}/{maxx}')
+        print(f'{x=}/{maxx-1}')
         for y in range(maxy):
             game = PatrolMap(puzzle_input)
-            
-            if (x,y) == game.guard_pos:
-                continue
-            
-            game.obstuctions.add((x,y))
-            if game.simulate_guard():
+
+            if game.obstruction_causes_loop((x,y)):
                 options.add((x,y))
     
     print(options)
